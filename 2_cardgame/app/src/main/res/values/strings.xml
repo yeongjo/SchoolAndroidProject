@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">cardgame</string>
+    <string name="restart_dialog_title">Restart</string>
 </resources>
