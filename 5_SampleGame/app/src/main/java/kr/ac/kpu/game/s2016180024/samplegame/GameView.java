@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Choreographer;
 import android.view.View;
 
 /**
@@ -31,6 +32,8 @@ public class GameView extends View {
     private Bitmap heartBitMap;
     private float x;
     private float y;
+    long lastFrame;
+    float frameTime;
 
     public GameView(Context context) {
         super(context);
@@ -92,6 +95,13 @@ public class GameView extends View {
         y+=0.02;
 //        draw();
         invalidate();
+
+        Choreographer.getInstance().postFrameCallback(frameTimeNanos -> {
+            frameTime = (frameTimeNanos - lastFrame)*0.000_000_001f;
+            doGameFrame();
+            lastFrame = frameTimeNanos;
+        });
+//        postDelayed(() -> doGameFrame(), 15);
     }
 
     private void invalidateTextPaintAndMeasurements() {
@@ -106,7 +116,7 @@ public class GameView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
 //        super.onDraw(canvas);
-        Log.d(TAG, "onDraw: x:"+x+"y:"+y);
+        Log.d(TAG, "onDraw: x:"+x+"y:"+y+" frameTime:"+frameTime); // 밀리초 마이크로초 나노초(그래서 6개의 자릿수가 추가됨)
 
         // TODO: consider storing these as member variables to reduce
         // allocations per draw cycle.
