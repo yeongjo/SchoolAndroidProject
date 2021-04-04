@@ -22,17 +22,18 @@
 
 플레이어가 총알에 맞으면 게임이 멈추며 현재 점수가 팝업으로 점수가 표시되고 그 팝업에는 다시하기 버튼이 표시됩니다.
 
-![image-20210404053700780](images\image-20210404053700780.png)
+![image-20210404053700780](https://user-images.githubusercontent.com/26712352/113496864-dfc6ff80-9538-11eb-9026-eb0908c26e7f.png)
+
 
 아래 이미지는 플레이어가 드래그로 새로 이동할 지점을 선택하고 터치를 때면 그 위치로 이동하기 전 드래그 중인 상황을 표현한 이미지입니다.
 
-![image-20210404100638097](images\image-20210404100638097.png)
+![image-20210404100638097](https://user-images.githubusercontent.com/26712352/113496866-e0f82c80-9538-11eb-9b1c-36a869921b18.png)
 
 
 
 ## 하이컨셉
 
-![image-20210404111928392](images\image-20210404111928392.png)
+![image-20210404111928392](https://user-images.githubusercontent.com/26712352/113496867-e2295980-9538-11eb-8780-7efbef5c2dac.png)
 
 
 
