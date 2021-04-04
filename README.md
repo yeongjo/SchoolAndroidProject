@@ -34,7 +34,7 @@
 ## 하이컨셉
 
 ![image-20210404111928392](https://user-images.githubusercontent.com/26712352/113496867-e2295980-9538-11eb-8780-7efbef5c2dac.png)
-
+![image](https://user-images.githubusercontent.com/26712352/113496918-7abfd980-9539-11eb-9790-f58ad490d456.png)
 
 
 ## 개발 범위
