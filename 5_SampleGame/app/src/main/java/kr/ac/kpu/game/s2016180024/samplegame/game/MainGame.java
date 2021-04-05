@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import kr.ac.kpu.game.s2016180024.samplegame.framework.GameObject;
+import kr.ac.kpu.game.s2016180024.samplegame.ui.view.GameView;
 
 public class MainGame {
     private static final String TAG = MainGame.class.getSimpleName();
@@ -25,11 +26,16 @@ public class MainGame {
     private Player player;
     public float frameTime;
     public static final int BALL_COUNT = 5;
+    boolean initalized;
 
-
-    public void init(AttributeSet attrs, int defStyle) {
+    public void init() {
+        if(initalized){
+            return;
+        }
+        int w = GameView.view.getWidth();
+        int h = GameView.view.getHeight();
         Random random = new Random();
-        player = new Player(100, 100, 0, 0);
+        player = new Player(w/2, h/2, 0, 0);
         gameObjects.add(player);
         for (int i = 0; i < BALL_COUNT; i++){
             float x = random.nextInt(1000);
@@ -38,15 +44,20 @@ public class MainGame {
             float dy = random.nextFloat() * 1000 - 500;
             gameObjects.add(new Ball(x,y,dx,dy));
         }
+        initalized = true;
     }
 
     public void update() {
+        if(!initalized)
+            return;
         for (GameObject o : gameObjects) {
             o.update();
         }
     }
 
     public void draw(Canvas canvas) {
+        if(!initalized)
+            return;
         for (GameObject o : gameObjects) {
             o.draw(canvas);
         }

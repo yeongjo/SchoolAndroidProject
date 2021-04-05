@@ -34,10 +34,10 @@ public class Ball implements GameObject {
         x += dx * game.frameTime;
         int w = GameView.view.getWidth();
         int h = GameView.view.getHeight();
-        if(x < 0 || x + width > w){
+        if(x < 0 && dx < 0 || x + width > w && dx > 0) {
             dx = -dx;
         }
-        if(y < 0 || y + height > h){
+        if(y < 0 && dy < 0 || y + height > h && dy > 0){
             dy = -dy;
         }
     }

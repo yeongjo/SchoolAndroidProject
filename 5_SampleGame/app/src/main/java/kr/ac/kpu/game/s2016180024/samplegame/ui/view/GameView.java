@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Choreographer;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,7 +25,7 @@ public class GameView extends View {
         super(context, attrs);
         view = this;
         MainGame mainGame = MainGame.get();
-        mainGame.init(attrs, 0);
+//        mainGame.init();
         doGameFrame();
     }
 
@@ -67,5 +68,12 @@ public class GameView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         MainGame mainGame = MainGame.get();
         return mainGame.onTouchEvent(event);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        Log.d(TAG, "onSizeChanged: "+w+","+h);
+        super.onSizeChanged(w, h, oldw, oldh);
+        MainGame.get().init();
     }
 }
