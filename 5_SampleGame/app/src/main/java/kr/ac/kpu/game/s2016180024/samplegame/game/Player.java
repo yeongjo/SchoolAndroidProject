@@ -34,8 +34,9 @@ public class Player implements GameObject {
     }
 
     public void update() {
-        y += dy * GameView.frameTime;
-        x += dx * GameView.frameTime;
+        MainGame game = MainGame.get();
+        y += dy * game.frameTime;
+        x += dx * game.frameTime;
         int w = GameView.view.getWidth();
         int h = GameView.view.getHeight();
         if(x < 0 || x + width > w){
