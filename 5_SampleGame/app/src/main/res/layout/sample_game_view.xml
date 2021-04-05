@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <kr.ac.kpu.game.s2016180024.samplegame.GameView
+    <kr.ac.kpu.game.s2016180024.samplegame.ui.view.GameView
         style="@style/Widget.Theme.SampleGame.MyView"
         android:layout_width="300dp"
         android:layout_height="300dp"

@@ -1,10 +1,6 @@
-package kr.ac.kpu.game.s2016180024.samplegame;
+package kr.ac.kpu.game.s2016180024.samplegame.ui.view;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,7 +9,15 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Choreographer;
+import android.view.MotionEvent;
 import android.view.View;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import kr.ac.kpu.game.s2016180024.samplegame.game.Ball;
+import kr.ac.kpu.game.s2016180024.samplegame.framework.GameObject;
+import kr.ac.kpu.game.s2016180024.samplegame.game.Player;
 
 /**
  * TODO: document your custom view class.
@@ -21,6 +25,7 @@ import android.view.View;
 public class GameView extends View {
 
     private static final String TAG = GameView.class.getSimpleName();
+    public static final int BALL_COUNT = 100;
     private String mExampleString; // TODO: use a default from R.string...
     private int mExampleColor = Color.RED; // TODO: use a default from R.color...
     private float mExampleDimension = 0; // TODO: use a default from R.dimen...
@@ -29,11 +34,12 @@ public class GameView extends View {
     private TextPaint mTextPaint;
     private float mTextWidth;
     private float mTextHeight;
-    private Bitmap heartBitMap;
-    private float x;
-    private float y;
+    private ArrayList<GameObject> gameObjects = new ArrayList<>();
+    private Player player;
+
     long lastFrame;
-    float frameTime;
+    public static float frameTime;
+    public static GameView view;
 
     public GameView(Context context) {
         super(context);
@@ -51,57 +57,37 @@ public class GameView extends View {
     }
 
     private void init(AttributeSet attrs, int defStyle) {
-        Resources res;
-        res = getResources();
-        heartBitMap = BitmapFactory.decodeResource(res, R.mipmap.heart);
-        y =x =100;
-        
+        view = this;
+        Random random = new Random();
+        player = new Player(100, 100, 0, 0);
+        gameObjects.add(player);
+        for (int i = 0; i < BALL_COUNT; i++){
+            float x = random.nextInt(1000);
+            float y = random.nextInt(1000);
+            float dx = random.nextFloat() * 1000 - 500;
+            float dy = random.nextFloat() * 1000 - 500;
+            gameObjects.add(new Ball(x,y,dx,dy));
+        }
+
         doGameFrame();
-        // Load attributes
-//        final TypedArray a = getContext().obtainStyledAttributes(
-//                attrs, R.styleable.GameView, defStyle, 0);
-//
-//        mExampleString = a.getString(
-//                R.styleable.GameView_exampleString);
-//        mExampleColor = a.getColor(
-//                R.styleable.GameView_exampleColor,
-//                mExampleColor);
-//        // Use getDimensionPixelSize or getDimensionPixelOffset when dealing with
-//        // values that should fall on pixel boundaries.
-//        mExampleDimension = a.getDimension(
-//                R.styleable.GameView_exampleDimension,
-//                mExampleDimension);
-//
-//        if (a.hasValue(R.styleable.GameView_exampleDrawable)) {
-//            mExampleDrawable = a.getDrawable(
-//                    R.styleable.GameView_exampleDrawable);
-//            mExampleDrawable.setCallback(this);
-//        }
-//
-//        a.recycle();
-//
-//        // Set up a default TextPaint object
-//        mTextPaint = new TextPaint();
-//        mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-//        mTextPaint.setTextAlign(Paint.Align.LEFT);
-//
-//        // Update TextPaint and text measurements from attributes
-//        invalidateTextPaintAndMeasurements();
     }
 
     private void doGameFrame() {
 //        update();
-        x+=0.01;
-        y+=0.02;
+        for (GameObject o : gameObjects) {
+            o.update();
+        }
 //        draw();
         invalidate();
 
         Choreographer.getInstance().postFrameCallback(frameTimeNanos -> {
+            if(lastFrame == 0) {
+                lastFrame = frameTimeNanos;
+            }
             frameTime = (frameTimeNanos - lastFrame)*0.000_000_001f;
             doGameFrame();
             lastFrame = frameTimeNanos;
         });
-//        postDelayed(() -> doGameFrame(), 15);
     }
 
     private void invalidateTextPaintAndMeasurements() {
@@ -115,9 +101,6 @@ public class GameView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-//        super.onDraw(canvas);
-        Log.d(TAG, "onDraw: x:"+x+"y:"+y+" frameTime:"+frameTime); // 밀리초 마이크로초 나노초(그래서 6개의 자릿수가 추가됨)
-
         // TODO: consider storing these as member variables to reduce
         // allocations per draw cycle.
         int paddingLeft = getPaddingLeft();
@@ -127,20 +110,21 @@ public class GameView extends View {
 
         int contentWidth = getWidth() - paddingLeft - paddingRight;
         int contentHeight = getHeight() - paddingTop - paddingBottom;
-// 콧물이 멈추지않아 ㅠㅠㅠㅠㅠ
-        canvas.drawBitmap(heartBitMap, x,y,null);
-        // Draw the text.
-//        canvas.drawText(mExampleString,
-//                paddingLeft + (contentWidth - mTextWidth) / 2,
-//                paddingTop + (contentHeight + mTextHeight) / 2,
-//                mTextPaint);
-//
-//        // Draw the example drawable on top of the text.
-//        if (mExampleDrawable != null) {
-//            mExampleDrawable.setBounds(paddingLeft, paddingTop,
-//                    paddingLeft + contentWidth, paddingTop + contentHeight);
-//            mExampleDrawable.draw(canvas);
-//        }
+
+        for (GameObject o : gameObjects) {
+            o.draw(canvas);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
+        Log.d(TAG, "onTouchEvent: "+action+", "+event.getX()+", "+ event.getY());
+        if(action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE){
+            player.moveTo(event.getX(), event.getY());
+            return true;
+        }
+        return false;
     }
 
     /**
