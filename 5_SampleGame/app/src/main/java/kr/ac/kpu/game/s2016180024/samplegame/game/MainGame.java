@@ -24,7 +24,7 @@ public class MainGame {
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
     private Player player;
     public float frameTime;
-    public static final int BALL_COUNT = 100;
+    public static final int BALL_COUNT = 5;
 
 
     public void init(AttributeSet attrs, int defStyle) {
