@@ -72,4 +72,14 @@ public class MainGame {
         }
         return false;
     }
+
+    public void add(GameObject object) {
+        this.gameObjects.add(object);
+    }
+
+    public void remove(GameObject object) {
+        GameView.view.post(() -> {
+            gameObjects.remove(object);
+        });
+    }
 }

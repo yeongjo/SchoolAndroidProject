@@ -36,14 +36,17 @@ public class Player implements GameObject {
     }
 
     public void moveTo(float x, float y) {
-        tx = x;
-        ty = y;
-        dx = tx - this.x;
-        dy = ty - this.y;
-        move_dist = speed;
-        angle = (float) Math.atan2(dy, dx);
-        dx = (float) (move_dist * Math.cos(angle));
-        dy = (float) (move_dist * Math.sin(angle));
+        Bullet bullet = new Bullet(this.x, this.y, x, y );
+        MainGame game = MainGame.get();
+        game.add(bullet);
+//        tx = x;
+//        ty = y;
+//        dx = tx - this.x;
+//        dy = ty - this.y;
+//        move_dist = speed;
+        angle = (float) Math.atan2(x-this.x, y-this.y);
+//        dx = (float) (move_dist * Math.cos(angle));
+//        dy = (float) (move_dist * Math.sin(angle));
     }
 
     public void update() {
@@ -75,6 +78,11 @@ public class Player implements GameObject {
     public void draw(Canvas canvas) {
         float left = x - width / 2;
         float top = y - height / 2;
+        float degree = (float)(-(angle+0)*180/Math.PI);
+        canvas.save();
+        canvas.rotate(degree, x, y);
         canvas.drawBitmap(bitmap, left, top, null);
+        canvas.restore();
+
     }
 }
