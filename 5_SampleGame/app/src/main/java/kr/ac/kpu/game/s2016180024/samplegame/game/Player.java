@@ -78,7 +78,7 @@ public class Player implements GameObject {
     public void draw(Canvas canvas) {
         float left = x - width / 2;
         float top = y - height / 2;
-        float degree = (float)(-(angle+0)*180/Math.PI);
+        float degree = (float)(-angle*180/Math.PI)+180;
         canvas.save();
         canvas.rotate(degree, x, y);
         canvas.drawBitmap(bitmap, left, top, null);
