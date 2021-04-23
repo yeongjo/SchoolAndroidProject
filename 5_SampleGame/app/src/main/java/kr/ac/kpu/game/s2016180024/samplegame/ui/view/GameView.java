@@ -2,13 +2,13 @@ package kr.ac.kpu.game.s2016180024.samplegame.ui.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Choreographer;
 import android.view.MotionEvent;
 import android.view.View;
 
+import kr.ac.kpu.game.s2016180024.samplegame.framework.Sound;
 import kr.ac.kpu.game.s2016180024.samplegame.game.MainGame;
 
 /**
@@ -25,27 +25,19 @@ public class GameView extends View {
         super(context, attrs);
         view = this;
         MainGame mainGame = MainGame.get();
+        Sound.init();
 //        mainGame.init();
-        doGameFrame();
+//        update();
     }
 
 
-    private void doGameFrame() {
+    private void update() {
 //        update();
         MainGame mainGame = MainGame.get();
         mainGame.update();
 
 //        draw();
         invalidate();
-
-        Choreographer.getInstance().postFrameCallback(frameTimeNanos -> {
-            if(lastFrame == 0) {
-                lastFrame = frameTimeNanos;
-            }
-            mainGame.frameTime = (frameTimeNanos - lastFrame)*0.000_000_001f;
-            doGameFrame();
-            lastFrame = frameTimeNanos;
-        });
     }
 
     @Override
@@ -74,6 +66,22 @@ public class GameView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         Log.d(TAG, "onSizeChanged: "+w+","+h);
         super.onSizeChanged(w, h, oldw, oldh);
-        MainGame.get().init();
+        boolean justInitialized = MainGame.get().init();
+        if(justInitialized){
+            requestCallack();
+        }
+    }
+
+    private void requestCallack() {
+        Choreographer.getInstance().postFrameCallback(frameTimeNanos -> {
+            if(lastFrame == 0) {
+                lastFrame = frameTimeNanos;
+            }
+            MainGame mainGame = MainGame.get();
+            mainGame.frameTime = (frameTimeNanos - lastFrame)*0.000_000_001f;
+            update();
+            lastFrame = frameTimeNanos;
+            requestCallack();
+        });
     }
 }

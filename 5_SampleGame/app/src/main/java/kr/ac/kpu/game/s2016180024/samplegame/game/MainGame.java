@@ -28,9 +28,9 @@ public class MainGame {
     public static final int BALL_COUNT = 5;
     boolean initalized;
 
-    public void init() {
+    public boolean init() {
         if(initalized){
-            return;
+            return false;
         }
         int w = GameView.view.getWidth();
         int h = GameView.view.getHeight();
@@ -45,6 +45,7 @@ public class MainGame {
             gameObjects.add(new Ball(x,y,dx,dy));
         }
         initalized = true;
+        return true;
     }
 
     public void update() {

@@ -1,23 +1,21 @@
-package kr.ac.kpu.game.s2016180024.samplegame.game;
+package kr.ac.kpu.game.s2016180024.dragonflight.game;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.media.MediaPlayer;
+import android.graphics.RectF;
 
-import kr.ac.kpu.game.s2016180024.samplegame.R;
-import kr.ac.kpu.game.s2016180024.samplegame.framework.GameObject;
-import kr.ac.kpu.game.s2016180024.samplegame.framework.Sound;
-import kr.ac.kpu.game.s2016180024.samplegame.ui.view.GameView;
+import kr.ac.kpu.game.s2016180024.dragonflight.R;
+import kr.ac.kpu.game.s2016180024.dragonflight.framework.GameBitmap;
+import kr.ac.kpu.game.s2016180024.dragonflight.framework.GameObject;
 
 public class Player implements GameObject {
+    private static final int MULTIPLIER = 4;
     private float x, y;
     private float dx, dy;
     private float tx, ty;
     private float speed;
-    private static float width, height;
-    private static Bitmap bitmap;
+    private int imageWidth, imageHeight;
+    private Bitmap bitmap;
     private float angle;
     private float move_dist;
 
@@ -29,28 +27,22 @@ public class Player implements GameObject {
         this.tx = 0;
         this.ty = 0;
         this.speed = 1000;
-        if (bitmap == null) {
-            Resources res = GameView.view.getResources();
-            bitmap = BitmapFactory.decodeResource(res, R.mipmap.plane_240);
-            width = bitmap.getWidth();
-            height = bitmap.getHeight();
-        }
-
+            bitmap = GameBitmap.load(R.mipmap.fighter);
+            imageWidth = bitmap.getWidth();
+            imageHeight = bitmap.getHeight();
     }
 
     public void moveTo(float x, float y) {
-        Bullet bullet = new Bullet(this.x, this.y, x, y );
         MainGame game = MainGame.get();
-        game.add(bullet);
-//        tx = x;
-//        ty = y;
+        tx = x;
+        ty = this.y;
 //        dx = tx - this.x;
 //        dy = ty - this.y;
 //        move_dist = speed;
-        angle = (float) Math.atan2(x-this.x, y-this.y);
+        //angle = (float) Math.atan2(x-this.x, y-this.y);
 //        dx = (float) (move_dist * Math.cos(angle));
 //        dy = (float) (move_dist * Math.sin(angle));
-        Sound.play(R.raw.hadouken);
+//        Sound.play(R.raw.hadouken);
     }
 
     public void update() {
@@ -80,12 +72,19 @@ public class Player implements GameObject {
     }
 
     public void draw(Canvas canvas) {
-        float left = x - width / 2;
-        float top = y - height / 2;
+        float sr = x - imageWidth / 2;
+        float st = y - imageHeight / 2;
+        int hw = imageWidth / 2;
+        int hh = imageHeight / 2;
+        float dl = x - hw * MULTIPLIER;
+        float dt = y - hh * MULTIPLIER;
+        float dr = x + hw * MULTIPLIER;
+        float db = y + hh * MULTIPLIER;
+        RectF dstRect = new RectF(x - hw * MULTIPLIER, y - hh * MULTIPLIER, x + hw * MULTIPLIER, y + hh);
         float degree = (float)(-angle*180/Math.PI)+180;
         canvas.save();
         canvas.rotate(degree, x, y);
-        canvas.drawBitmap(bitmap, left, top, null);
+        canvas.drawBitmap(bitmap, sr, st, null);
         canvas.restore();
 
     }
