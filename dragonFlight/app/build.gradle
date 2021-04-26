@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 29
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "kr.ac.kpu.game.s2016180024.dragonflight"
+        applicationId "kr.ac.kpu.game.s1234567.dragonflight"
         minSdkVersion 22
-        targetSdkVersion 30
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
