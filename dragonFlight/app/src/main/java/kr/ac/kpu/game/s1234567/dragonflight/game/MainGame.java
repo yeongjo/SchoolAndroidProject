@@ -18,6 +18,7 @@ public class MainGame {
     // singleton
     private static MainGame instance;
     private Player player;
+    private Score score;
 
     public static MainGame get() {
         if (instance == null) {
@@ -29,7 +30,7 @@ public class MainGame {
     private boolean initialized;
 
 //    Player player;
-    ArrayList<GameObject> objects = new ArrayList<>();
+    ArrayList<ArrayList<GameObject>> layers;
     private static HashMap<Class, ArrayList<GameObject>> recycleBin = new HashMap<>();
 
     public void recycle(GameObject object) {
@@ -54,56 +55,99 @@ public class MainGame {
         int w = GameView.view.getWidth();
         int h = GameView.view.getHeight();
 
-        player = new Player(w/2, h - 300);
-        objects.add(player);
+        initLayers(Layer.ENEMY_COUNT.ordinal());
 
-        objects.add(new EnemyGenerator());
+        int margin = (int) (20*GameView.MULTIPLIER);
+        score = new Score(w-margin, margin);
+        score.setScore(0);
+        add(Layer.ui, score);
+
+        player = new Player(w/2, h - 300);
+        add(Layer.player, player);
+
+        add(Layer.controller, new EnemyGenerator());
 
         initialized = true;
         return true;
     }
 
+    public enum Layer{
+        enemy, bullet, player, controller, ui, ENEMY_COUNT
+    }
+
+    private void initLayers(int layerCount) {
+        layers = new ArrayList<>();
+        for (int i = 0; i < layerCount; i++) {
+            layers.add(new ArrayList<>());
+        }
+    }
+
     public void update() {
         //if (!initialized) return;
-        for (GameObject o : objects) {
-            o.update();
+        for (ArrayList<GameObject> objects: layers){
+            for (GameObject o : objects){
+                o.update();
+            }
         }
 
-        for (GameObject o1 : objects) {
-            if (!(o1 instanceof Enemy)) {
-                continue;
-            }
-            Enemy enemy = (Enemy) o1;
-            boolean removed = false;
-            for (GameObject o2 : objects) {
-                if (!(o2 instanceof Bullet)) {
-                    continue;
-                }
-                Bullet bullet = (Bullet) o2;
+        ArrayList<GameObject> enemies = layers.get(Layer.enemy.ordinal());
+        ArrayList<GameObject> bullets = layers.get(Layer.bullet.ordinal());
 
-                if (CollisionHelper.collides(enemy, bullet)) {
-                    //Log.d(TAG, "Collision!" + o1 + " - " + o2);
-                    remove(enemy);
+        for (GameObject o1: enemies){
+            Enemy enemy = (Enemy) o1;
+            boolean collided = false;
+            for (GameObject o2: bullets){
+                Bullet bullet = (Bullet)o2;
+                if(CollisionHelper.collides(enemy, bullet)){
                     remove(bullet);
-                    //bullet.recycle();
-                    //recycle(bullet);
-                    removed = true;
+                    remove(enemy);
+                    score.addScore(10);
+                    collided = true;
                     break;
                 }
             }
-            if (removed) {
-                continue;
-            }
-            if (CollisionHelper.collides(enemy, player)) {
-                Log.d(TAG, "Collision: Enemy - Player");
+            if(collided){
+                break;
             }
         }
+
+//        for (GameObject o1 : objects) {
+//            if (!(o1 instanceof Enemy)) {
+//                continue;
+//            }
+//            Enemy enemy = (Enemy) o1;
+//            boolean removed = false;
+//            for (GameObject o2 : objects) {
+//                if (!(o2 instanceof Bullet)) {
+//                    continue;
+//                }
+//                Bullet bullet = (Bullet) o2;
+//
+//                if (CollisionHelper.collides(enemy, bullet)) {
+//                    //Log.d(TAG, "Collision!" + o1 + " - " + o2);
+//                    remove(enemy);
+//                    remove(bullet);
+//                    //bullet.recycle();
+//                    //recycle(bullet);
+//                    removed = true;
+//                    break;
+//                }
+//            }
+//            if (removed) {
+//                continue;
+//            }
+//            if (CollisionHelper.collides(enemy, player)) {
+//                Log.d(TAG, "Collision: Enemy - Player");
+//            }
+//        }
     }
 
     public void draw(Canvas canvas) {
         //if (!initialized) return;
-        for (GameObject o: objects) {
-            o.draw(canvas);
+        for (ArrayList<GameObject> objects: layers) {
+            for (GameObject o : objects) {
+                o.draw(canvas);
+            }
         }
     }
 
@@ -117,10 +161,11 @@ public class MainGame {
         return false;
     }
 
-    public void add(GameObject gameObject) {
+    public void add(Layer layer, GameObject gameObject) {
         GameView.view.post(new Runnable() {
             @Override
             public void run() {
+                ArrayList<GameObject> objects = layers.get(layer.ordinal());
                 objects.add(gameObject);
             }
         });
@@ -135,7 +180,11 @@ public class MainGame {
         GameView.view.post(new Runnable() {
             @Override
             public void run() {
-                objects.remove(gameObject);
+                for (ArrayList<GameObject> objects: layers) {
+                    if(objects.remove(gameObject)){
+                        break;
+                    }
+                }
 //                Log.d(TAG, "<R> object count = " + objects.size());
             }
         });
