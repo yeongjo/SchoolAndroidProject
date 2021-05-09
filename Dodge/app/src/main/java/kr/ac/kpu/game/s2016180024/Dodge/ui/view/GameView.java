@@ -1,9 +1,8 @@
-package kr.ac.kpu.game.s1234567.dragonflight.ui.view;
+package kr.ac.kpu.game.s2016180024.Dodge.ui.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Choreographer;
 import android.view.MotionEvent;
@@ -11,21 +10,21 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import kr.ac.kpu.game.s1234567.dragonflight.framework.Sound;
-import kr.ac.kpu.game.s1234567.dragonflight.game.MainGame;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
+import kr.ac.kpu.game.s2016180024.Dodge.game.MainGame;
 
 public class GameView extends View {
-    private static final String TAG = GameView.class.getSimpleName();
+    private static final String TAG = kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView.class.getSimpleName();
 
     public static float MULTIPLIER = 2;
     //    private Ball b1, b2;
 
     private long lastFrame;
-    public static GameView view;
+    public static kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView view;
 
     public GameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        GameView.view = this;
+        kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView.view = this;
         Sound.init(context);
 //        startUpdating();
     }

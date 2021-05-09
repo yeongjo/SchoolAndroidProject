@@ -1,19 +1,17 @@
-package kr.ac.kpu.game.s1234567.dragonflight.game;
+package kr.ac.kpu.game.s2016180024.Dodge.game;
 
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.Log;
 
-import java.util.ArrayList;
-
-import kr.ac.kpu.game.s1234567.dragonflight.R;
-import kr.ac.kpu.game.s1234567.dragonflight.framework.BoxCollidable;
-import kr.ac.kpu.game.s1234567.dragonflight.framework.GameBitmap;
-import kr.ac.kpu.game.s1234567.dragonflight.framework.GameObject;
-import kr.ac.kpu.game.s1234567.dragonflight.framework.Recyclable;
+import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.BoxCollidable;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Recyclable;
 
 public class Bullet implements GameObject, BoxCollidable, Recyclable {
-    private static final String TAG = Bullet.class.getSimpleName();
+    private static final String TAG = kr.ac.kpu.game.s2016180024.Dodge.game.Bullet.class.getSimpleName();
     private float x;
     private final GameBitmap bitmap;
     private float y;
@@ -29,11 +27,11 @@ public class Bullet implements GameObject, BoxCollidable, Recyclable {
     }
 
 //    private static ArrayList<Bullet> recycleBin = new ArrayList<>();
-    public static Bullet get(float x, float y, int speed) {
-        MainGame game = MainGame.get();
-        Bullet bullet = (Bullet) game.get(Bullet.class);
+    public static kr.ac.kpu.game.s2016180024.Dodge.game.Bullet get(float x, float y, int speed) {
+        kr.ac.kpu.game.s2016180024.Dodge.game.MainGame game = kr.ac.kpu.game.s2016180024.Dodge.game.MainGame.get();
+        kr.ac.kpu.game.s2016180024.Dodge.game.Bullet bullet = (kr.ac.kpu.game.s2016180024.Dodge.game.Bullet) game.get(kr.ac.kpu.game.s2016180024.Dodge.game.Bullet.class);
         if (bullet == null) {
-            return new Bullet(x, y, speed);
+            return new kr.ac.kpu.game.s2016180024.Dodge.game.Bullet(x, y, speed);
         }
         bullet.init(x, y, speed);
         return bullet;
@@ -47,7 +45,7 @@ public class Bullet implements GameObject, BoxCollidable, Recyclable {
 
     @Override
     public void update() {
-        MainGame game = MainGame.get();
+        kr.ac.kpu.game.s2016180024.Dodge.game.MainGame game = kr.ac.kpu.game.s2016180024.Dodge.game.MainGame.get();
         y += speed * game.frameTime;
 
         if (y < 0) {

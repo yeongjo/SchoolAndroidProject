@@ -1,4 +1,4 @@
-package kr.ac.kpu.game.s1234567.dragonflight.ui.activity;
+package kr.ac.kpu.game.s2016180024.Dodge.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import kr.ac.kpu.game.s1234567.dragonflight.R;
-import kr.ac.kpu.game.s1234567.dragonflight.ui.view.GameView;
+import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
 public class MainActivity extends AppCompatActivity {
 

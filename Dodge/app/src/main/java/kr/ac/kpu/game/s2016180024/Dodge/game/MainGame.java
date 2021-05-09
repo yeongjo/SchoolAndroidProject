@@ -1,4 +1,4 @@
-package kr.ac.kpu.game.s1234567.dragonflight.game;
+package kr.ac.kpu.game.s2016180024.Dodge.game;
 
 import android.graphics.Canvas;
 import android.view.MotionEvent;
@@ -6,22 +6,22 @@ import android.view.MotionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import kr.ac.kpu.game.s1234567.dragonflight.R;
-import kr.ac.kpu.game.s1234567.dragonflight.framework.GameObject;
-import kr.ac.kpu.game.s1234567.dragonflight.framework.Recyclable;
-import kr.ac.kpu.game.s1234567.dragonflight.ui.view.GameView;
-import kr.ac.kpu.game.s1234567.dragonflight.utils.CollisionHelper;
+import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Recyclable;
+import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
+import kr.ac.kpu.game.s2016180024.Dodge.utils.CollisionHelper;
 
 public class MainGame {
-    private static final String TAG = MainGame.class.getSimpleName();
+    private static final String TAG = kr.ac.kpu.game.s2016180024.Dodge.game.MainGame.class.getSimpleName();
     // singleton
-    private static MainGame instance;
+    private static kr.ac.kpu.game.s2016180024.Dodge.game.MainGame instance;
     private Player player;
     private Score score;
 
-    public static MainGame get() {
+    public static kr.ac.kpu.game.s2016180024.Dodge.game.MainGame get() {
         if (instance == null) {
-            instance = new MainGame();
+            instance = new kr.ac.kpu.game.s2016180024.Dodge.game.MainGame();
         }
         return instance;
     }

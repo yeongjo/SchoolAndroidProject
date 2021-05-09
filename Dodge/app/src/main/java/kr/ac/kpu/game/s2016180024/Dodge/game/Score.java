@@ -1,14 +1,14 @@
-package kr.ac.kpu.game.s1234567.dragonflight.game;
+package kr.ac.kpu.game.s2016180024.Dodge.game;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import kr.ac.kpu.game.s1234567.dragonflight.R;
-import kr.ac.kpu.game.s1234567.dragonflight.framework.GameBitmap;
-import kr.ac.kpu.game.s1234567.dragonflight.framework.GameObject;
-import kr.ac.kpu.game.s1234567.dragonflight.ui.view.GameView;
+import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
+import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
 public class Score implements GameObject {
     private final Bitmap bitmap;
