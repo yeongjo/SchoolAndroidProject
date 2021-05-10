@@ -27,18 +27,23 @@ public class GameBitmap {
 
     protected final Bitmap bitmap;
     protected RectF dstRect = new RectF();
+    protected float scale = 1;
     public GameBitmap(int resId) {
         bitmap = load(resId);
+    }
+
+    public void setScale(float scale){
+        this.scale = scale;
     }
 
     public void draw(Canvas canvas, float x, float y) {
         int hw = getWidth() / 2;
         int hh = getHeight() / 2;
         //Rect srcRect = new Rect(left, )
-        float dl = x - hw * GameView.MULTIPLIER;
-        float dt = y - hh * GameView.MULTIPLIER;
-        float dr = x + hw * GameView.MULTIPLIER;
-        float db = y + hh * GameView.MULTIPLIER;
+        float dl = x - hw * GameView.MULTIPLIER * scale;
+        float dt = y - hh * GameView.MULTIPLIER * scale;
+        float dr = x + hw * GameView.MULTIPLIER * scale;
+        float db = y + hh * GameView.MULTIPLIER * scale;
         dstRect.set(dl, dt, dr, db);
         canvas.drawBitmap(bitmap, null, dstRect, null);
     }
@@ -55,10 +60,10 @@ public class GameBitmap {
         int hw = getWidth() / 2;
         int hh = getHeight() / 2;
         //Rect srcRect = new Rect(left, )
-        float dl = x - hw * GameView.MULTIPLIER;
-        float dt = y - hh * GameView.MULTIPLIER;
-        float dr = x + hw * GameView.MULTIPLIER;
-        float db = y + hh * GameView.MULTIPLIER;
+        float dl = x - hw * GameView.MULTIPLIER * scale;
+        float dt = y - hh * GameView.MULTIPLIER * scale;
+        float dr = x + hw * GameView.MULTIPLIER * scale;
+        float db = y + hh * GameView.MULTIPLIER * scale;
         rect.set(dl, dt, dr, db);
     }
 

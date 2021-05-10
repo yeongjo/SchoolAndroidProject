@@ -20,7 +20,7 @@ public class Enemy implements GameObject, BoxCollidable, Recyclable {
             R.mipmap.enemy_11, R.mipmap.enemy_12, R.mipmap.enemy_13, R.mipmap.enemy_14, R.mipmap.enemy_15,
             R.mipmap.enemy_16, R.mipmap.enemy_17, R.mipmap.enemy_18, R.mipmap.enemy_19, R.mipmap.enemy_20,
     };
-    private static final String TAG = kr.ac.kpu.game.s2016180024.Dodge.game.Enemy.class.getSimpleName();
+    private static final String TAG = Enemy.class.getSimpleName();
     private float x;
     private GameBitmap bitmap;
     private int level;
@@ -31,11 +31,11 @@ public class Enemy implements GameObject, BoxCollidable, Recyclable {
         Log.d(TAG, "Enemy constructor");
     }
 
-    public static kr.ac.kpu.game.s2016180024.Dodge.game.Enemy get(int level, int x, int y, int speed) {
-        kr.ac.kpu.game.s2016180024.Dodge.game.MainGame game = kr.ac.kpu.game.s2016180024.Dodge.game.MainGame.get();
-        kr.ac.kpu.game.s2016180024.Dodge.game.Enemy enemy = (kr.ac.kpu.game.s2016180024.Dodge.game.Enemy) game.get(kr.ac.kpu.game.s2016180024.Dodge.game.Enemy.class);
+    public static Enemy get(int level, int x, int y, int speed) {
+        MainGame game = MainGame.get();
+        Enemy enemy = (Enemy) game.get(Enemy.class);
         if (enemy == null) {
-            enemy = new kr.ac.kpu.game.s2016180024.Dodge.game.Enemy();
+            enemy = new Enemy();
         }
 
         enemy.init(level, x, y, speed);
@@ -51,11 +51,12 @@ public class Enemy implements GameObject, BoxCollidable, Recyclable {
         int resId = RESOURCE_IDS[level - 1];
 
         this.bitmap = new AnimationGameBitmap(resId, FRAMES_PER_SECOND, 0);
+        this.bitmap.setScale(0.5f);
     }
 
     @Override
     public void update() {
-        kr.ac.kpu.game.s2016180024.Dodge.game.MainGame game = kr.ac.kpu.game.s2016180024.Dodge.game.MainGame.get();
+        MainGame game = MainGame.get();
         y += speed * game.frameTime;
 
         if (y > GameView.view.getHeight()) {

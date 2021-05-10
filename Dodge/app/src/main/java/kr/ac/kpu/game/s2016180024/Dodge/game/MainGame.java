@@ -13,15 +13,15 @@ import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 import kr.ac.kpu.game.s2016180024.Dodge.utils.CollisionHelper;
 
 public class MainGame {
-    private static final String TAG = kr.ac.kpu.game.s2016180024.Dodge.game.MainGame.class.getSimpleName();
+    private static final String TAG = MainGame.class.getSimpleName();
     // singleton
-    private static kr.ac.kpu.game.s2016180024.Dodge.game.MainGame instance;
+    private static MainGame instance;
     private Player player;
     private Score score;
 
-    public static kr.ac.kpu.game.s2016180024.Dodge.game.MainGame get() {
+    public static MainGame get() {
         if (instance == null) {
-            instance = new kr.ac.kpu.game.s2016180024.Dodge.game.MainGame();
+            instance = new MainGame();
         }
         return instance;
     }
@@ -45,6 +45,10 @@ public class MainGame {
         ArrayList<GameObject> array = recycleBin.get(clazz);
         if (array == null || array.isEmpty()) return null;
         return array.remove(0);
+    }
+
+    public Player getPlayer(){
+        return player;
     }
 
     public enum Layer {
@@ -155,16 +159,16 @@ public class MainGame {
 
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
-//        if (action == MotionEvent.ACTION_DOWN) {
-        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
-            player.moveTo(event.getX(), event.getY());
-//            int li = 0;
-//            for (ArrayList<GameObject> objects: layers) {
-//                for (GameObject o : objects) {
-//                    Log.d(TAG, "L:" + li + " " + o);
-//                }
-//                li++;
-//            }
+        if (action == MotionEvent.ACTION_DOWN) {
+            player.startDrag(event.getX(), event.getY());
+            return true;
+        }
+        if(action == MotionEvent.ACTION_MOVE){
+            player.dragging(event.getX(), event.getY());
+            return true;
+        }
+        if (action == MotionEvent.ACTION_UP){
+            player.endDrag(event.getX(), event.getY());
             return true;
         }
         return false;

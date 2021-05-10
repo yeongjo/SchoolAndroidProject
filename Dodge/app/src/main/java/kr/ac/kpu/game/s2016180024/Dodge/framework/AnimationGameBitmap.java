@@ -43,8 +43,8 @@ public class AnimationGameBitmap extends kr.ac.kpu.game.s2016180024.Dodge.framew
 
         int fw = frameWidth;
         int h = imageHeight;
-        float hw = fw / 2 * GameView.MULTIPLIER;
-        float hh = h / 2 * GameView.MULTIPLIER;
+        float hw = fw / 2 * GameView.MULTIPLIER * scale;
+        float hh = h / 2 * GameView.MULTIPLIER * scale;
         srcRect.set(fw * frameIndex, 0, fw * frameIndex + fw, h);
         dstRect.set(x - hw, y - hh, x + hw, y + hh);
         canvas.drawBitmap(bitmap, srcRect, dstRect, null);
