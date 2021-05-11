@@ -50,7 +50,7 @@ public class statsItem extends Item {
         if(type == Type.heal){
             return "Heal";
         }
-        return getTypeName()+" "+getAmountString()+" "+(amount>0?"increase":"decrease");
+        return getTypeName()+" "+getAmountString()+" "+(amount>=0?"increase":"decrease");
     }
 
     private String getAmountString(){
@@ -58,7 +58,7 @@ public class statsItem extends Item {
         float multiplier = 1;
         switch(type){
             case addRadius:
-                multiplier = 10;
+                multiplier = 8;
                 break;
             case addSpeed:
                 multiplier = 40;

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "209310321970",
+    "project_id": "dodge-a8173",
+    "storage_bucket": "dodge-a8173.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:209310321970:android:abb36a854bc781f1225b2b",
+        "android_client_info": {
+          "package_name": "kr.ac.kpu.game.s2016180024.Dodge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "209310321970-jh80clhes3k5cc1cqrp3mm8o7cc9jutk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqWUYZfsO9zPc6V61YwH3ncXheTbtY8XM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "209310321970-jh80clhes3k5cc1cqrp3mm8o7cc9jutk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

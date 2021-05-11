@@ -18,7 +18,7 @@ public class EnemyGenerator implements GameObject {
     private int wave;
     private int nextTargetLevel;
     private int level;
-    private int chapter;
+    private int chapter = 1;
 
     public EnemyGenerator() {
         reset();
@@ -53,6 +53,7 @@ public class EnemyGenerator implements GameObject {
     private void generate() {
         wave++;
         level = wave / 5 + 1;
+        MainGame.get().getScore().addScore(level);
         chapter = level / ENEMY_TYPE_COUNT + 1;
         //Log.d(TAG, "Generate now !!");
         MainGame game = MainGame.get();
@@ -90,6 +91,6 @@ public class EnemyGenerator implements GameObject {
         wave = 0;
         time = INITIAL_SPAWN_INTERVAL;
         spawnInterval = INITIAL_SPAWN_INTERVAL;
-        level = nextTargetLevel = 1;
+        chapter = level = nextTargetLevel = 1;
     }
 }

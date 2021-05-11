@@ -208,6 +208,7 @@ public class Player implements GameObject, CircleCollidable {
             canvas.drawLine(pos.x+targetRightVector.x, pos.y+targetRightVector.y, pos.x + draggingTargetDelta.x+targetRightVector.x, pos.y + draggingTargetDelta.y+targetRightVector.y, paint);
             canvas.drawLine(pos.x-targetRightVector.x, pos.y-targetRightVector.y, pos.x + draggingTargetDelta.x-targetRightVector.x, pos.y + draggingTargetDelta.y-targetRightVector.y, paint);
             canvas.drawCircle(pos.x + draggingTargetDelta.x, pos.y + draggingTargetDelta.y, radius, paint);
+            canvas.drawCircle(pos.x, pos.y, radius, paint);
         }
         if(isMoving){
             paint.setColor(0xffff0000);   //color.RED
@@ -248,6 +249,7 @@ public class Player implements GameObject, CircleCollidable {
     }
     public void addRadius(float amount){
         radius += amount;
+        radius = Math.max(10, radius);
     }
     public float getRadius(){
         return radius;
