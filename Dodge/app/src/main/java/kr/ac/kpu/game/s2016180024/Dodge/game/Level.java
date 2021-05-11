@@ -10,63 +10,50 @@ import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
-public class Score implements GameObject {
+public class Level implements GameObject {
+
+    public static Level self;
     private final Bitmap bitmap;
     private final int right;
     private final int top;
-
-    public void setScore(int score) {
-        this.score = score;
-        this.displayScore = score;
-    }
-    public void addScore(int amount) {
-        this.score += amount;
-    }
-
-    private int score, displayScore;
     private Rect src = new Rect();
     private RectF dst = new RectF();
+    private int level;
 
-    public Score(int right, int top) {
+    public void setLevel(int score) {
+        this.level = score;
+    }
+    public void sendNextLevel() {
+        this.level += 1;
+    }
+
+    public Level(int right, int top) {
         bitmap = GameBitmap.load(R.mipmap.number_24x32);
         this.right = right;
         this.top = top;
-    }
-
-    public int getScore(){
-        return score;
+        self = this;
     }
 
     @Override
     public void update() {
-        if (displayScore < score) {
-            displayScore++;
-        }
+
     }
 
     @Override
     public void draw(Canvas canvas) {
-        int value = this.displayScore;
+        int value = this.level;
         int nw = bitmap.getWidth() / 10;
         int nh = bitmap.getHeight();
         int x = right;
         int dw = (int) (nw * GameView.MULTIPLIER);
         int dh = (int) (nh * GameView.MULTIPLIER);
-        if(value == 0){
+        while (value > 0) {
+            int digit = value % 10;
+            src.set(digit * nw, 0, (digit + 1) * nw, nh);
             x -= dw;
-            src.set(value * nw, 0, (value + 1) * nw, nh);
             dst.set(x, top, x + dw, top + dh);
             canvas.drawBitmap(bitmap, src, dst, null);
-        }else {
-            while (value > 0) {
-                int digit = value % 10;
-                src.set(digit * nw, 0, (digit + 1) * nw, nh);
-                x -= dw;
-                dst.set(x, top, x + dw, top + dh);
-                canvas.drawBitmap(bitmap, src, dst, null);
-                value /= 10;
-            }
+            value /= 10;
         }
     }
-
 }

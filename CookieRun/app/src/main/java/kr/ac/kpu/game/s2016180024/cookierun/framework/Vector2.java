@@ -1,4 +1,4 @@
-package kr.ac.kpu.game.s2016180024.Dodge.framework;
+package kr.ac.kpu.game.s2016180024.cookierun.framework;
 
 public class Vector2 {
     public static float TO_RADIANS = (1 / 180.0f) * (float) Math.PI;
@@ -104,9 +104,5 @@ public class Vector2 {
         float distX = this.x - x;
         float distY = this.y - y;
         return (float)Math.sqrt(distX * distX + distY * distY);
-    }
-
-    public String toString(){
-        return "("+x+","+y+")";
     }
 }

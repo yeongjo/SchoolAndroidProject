@@ -1,23 +1,46 @@
 package kr.ac.kpu.game.s2016180024.Dodge.game;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Recyclable;
+import kr.ac.kpu.game.s2016180024.Dodge.game.item.AttackRangeItem;
+import kr.ac.kpu.game.s2016180024.Dodge.game.item.Item;
+import kr.ac.kpu.game.s2016180024.Dodge.game.item.LifeStealItem;
+import kr.ac.kpu.game.s2016180024.Dodge.game.item.statsItem;
+import kr.ac.kpu.game.s2016180024.Dodge.ui.activity.MainActivity;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 import kr.ac.kpu.game.s2016180024.Dodge.utils.CollisionHelper;
 
 public class MainGame {
     private static final String TAG = MainGame.class.getSimpleName();
     // singleton
+    public float frameTime;
     private static MainGame instance;
+    private static HashMap<Class, ArrayList<GameObject>> recycleBin = new HashMap<>();
+    ArrayList<ArrayList<GameObject>> layers;
     private Player player;
     private Score score;
+    private Level level;
+    private PlayerHud playerHud;
+    private boolean initialized;
+    private boolean isPlaying = true;
+    private EnemyGenerator enemyEngerator;
+    private boolean isAskingItem;
+
+    public enum Layer {
+        bg1, bg2, enemy, bullet, player, ui, controller, ENEMY_COUNT
+    }
 
     public static MainGame get() {
         if (instance == null) {
@@ -25,12 +48,6 @@ public class MainGame {
         }
         return instance;
     }
-    public float frameTime;
-    private boolean initialized;
-
-//    Player player;
-    ArrayList<ArrayList<GameObject>> layers;
-    private static HashMap<Class, ArrayList<GameObject>> recycleBin = new HashMap<>();
 
     public void recycle(GameObject object) {
         Class clazz = object.getClass();
@@ -41,6 +58,7 @@ public class MainGame {
         }
         array.add(object);
     }
+
     public GameObject get(Class clazz) {
         ArrayList<GameObject> array = recycleBin.get(clazz);
         if (array == null || array.isEmpty()) return null;
@@ -51,9 +69,6 @@ public class MainGame {
         return player;
     }
 
-    public enum Layer {
-        bg1, enemy, bullet, player, bg2, ui, controller, ENEMY_COUNT
-    }
     public boolean initResources() {
         if (initialized) {
             return false;
@@ -66,12 +81,20 @@ public class MainGame {
         player = new Player(w/2, h - 300);
         //layers.get(Layer.player.ordinal()).add(player);
         add(Layer.player, player);
-        add(Layer.controller, new EnemyGenerator());
+        enemyEngerator = new EnemyGenerator();
+        add(Layer.controller, enemyEngerator);
 
         int margin = (int) (20 * GameView.MULTIPLIER);
         score = new Score(w - margin, margin);
         score.setScore(0);
         add(Layer.ui, score);
+
+        level = new Level(w - margin, margin + 100);
+        level.setLevel(1);
+        add(Layer.ui, level);
+
+        playerHud = new PlayerHud(margin, margin);
+        add(Layer.ui, playerHud);
 
         VerticalScrollBackground bg = new VerticalScrollBackground(R.mipmap.bg_city, 10);
         add(Layer.bg1, bg);
@@ -91,11 +114,15 @@ public class MainGame {
     }
 
     public void update() {
-        //if (!initialized) return;
+        if (!isPlaying) return;
         for (ArrayList<GameObject> objects: layers) {
             for (GameObject o : objects) {
                 o.update();
             }
+        }
+        if(player.isDead()){
+            askRestart();
+            return;
         }
 
         ArrayList<GameObject> enemies = layers.get(Layer.enemy.ordinal());
@@ -103,49 +130,32 @@ public class MainGame {
         for (GameObject o1: enemies) {
             Enemy enemy = (Enemy) o1;
             boolean collided = false;
-            for (GameObject o2: bullets) {
-                Bullet bullet = (Bullet) o2;
-                if (CollisionHelper.collides(enemy, bullet)) {
-                    remove(bullet, false);
-                    remove(enemy, false);
-                    score.addScore(10);
-                    collided = true;
-                    break;
-                }
-            }
-            if (collided) {
-                break;
-            }
-        }
-//        for (GameObject o1 : objects) {
-//            if (!(o1 instanceof Enemy)) {
-//                continue;
-//            }
-//            Enemy enemy = (Enemy) o1;
-//            boolean removed = false;
-//            for (GameObject o2 : objects) {
-//                if (!(o2 instanceof Bullet)) {
-//                    continue;
-//                }
+//            for (GameObject o2: bullets) {
 //                Bullet bullet = (Bullet) o2;
-//
 //                if (CollisionHelper.collides(enemy, bullet)) {
-//                    //Log.d(TAG, "Collision!" + o1 + " - " + o2);
-//                    remove(enemy);
-//                    remove(bullet);
-//                    //bullet.recycle();
-//                    //recycle(bullet);
-//                    removed = true;
+//                    remove(bullet, false);
+//                    remove(enemy, false);
+//                    score.addScore(10);
+//                    collided = true;
 //                    break;
 //                }
 //            }
-//            if (removed) {
-//                continue;
-//            }
-//            if (CollisionHelper.collides(enemy, player)) {
-//                Log.d(TAG, "Collision: Enemy - Player");
-//            }
-//        }
+            if (collided) {
+                break;
+            }
+            if (CollisionHelper.collides(enemy, player)) {
+                if(!player.isMoving()) {
+                    player.takeDamage(enemy.getDamage());
+                    player.showAttackEffect();
+                }else{
+                    player.onAttack(enemy);
+                    score.addScore((int)(enemy.getDamage()));
+                }
+                remove(enemy, false);
+                break;
+            }
+
+        }
     }
 
     public void draw(Canvas canvas) {
@@ -160,6 +170,10 @@ public class MainGame {
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
+            if(player.isDead()){
+                askRestart();
+                return true;
+            }
             player.startDrag(event.getX(), event.getY());
             return true;
         }
@@ -210,5 +224,74 @@ public class MainGame {
         } else {
             runnable.run();
         }
+    }
+
+    void askItem(){
+        Log.d(TAG, "askItem");
+        isPlaying = false;
+        isAskingItem = true;
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.self);
+        builder.setCancelable(false);
+        builder.setTitle("select item");
+        int chapter = enemyEngerator.getChapter();
+        ArrayList<Item> items = new ArrayList<>(Arrays.asList(new statsItem(statsItem.Type.heal, 0),
+                new statsItem(statsItem.Type.addHp, 2 * chapter),
+                new statsItem(statsItem.Type.addStamina, 1 * chapter),
+                new statsItem(statsItem.Type.addRadius, 10 * chapter),
+                new statsItem(statsItem.Type.addRadius, -10 * chapter),
+                new statsItem(statsItem.Type.addSpeed, 70 * chapter),
+                new statsItem(statsItem.Type.subSpeedAddStamina, 2 * chapter)));
+        items.add(new LifeStealItem(0.1f));
+        items.add(new AttackRangeItem(0.1f));
+        String[] itemNames = new String[items.size()];
+        int i = 0;
+        for (Item item : items){
+            itemNames[i] = item.toString();
+            ++i;
+        }
+        builder.setItems(itemNames, (dialog, id) -> {
+            // 프로그램을 종료한다
+            player.addItem(items.get(id));
+            Log.d(TAG, "askItem: selected item: "+ items.get(id));
+            isPlaying = true;
+            isAskingItem = false;
+            Toast.makeText(MainActivity.self,
+                    items.get(id) + " 선택했습니다.",
+                    Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    void askRestart(){
+        // 알람 다이어그램을 사용해서 팜업질문을 할 수 있다.
+        Log.d(TAG, "askRestart");
+        isPlaying = false;
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.self);
+        builder.setTitle("Your score is "+score.getScore());
+        builder.setMessage("Do you want restart game?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ArrayList<GameObject> enemies = layers.get(Layer.enemy.ordinal());
+                ArrayList<GameObject> bullets = layers.get(Layer.bullet.ordinal());
+                for(GameObject object : enemies) {
+                    remove(object);
+                }
+                for(GameObject object : bullets) {
+                    remove(object);
+                }
+                player.reset();
+                level.setLevel(1);
+                score.setScore(0);
+                enemyEngerator.reset();
+                isPlaying = true;
+            }
+        });
+
+        builder.setNegativeButton("No", null);
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

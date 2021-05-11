@@ -4,15 +4,20 @@ import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.Log;
 
+import java.util.Vector;
+
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.BoxCollidable;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollidable;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollider;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Recyclable;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
-public class Enemy implements GameObject, BoxCollidable, Recyclable {
+public class Enemy implements GameObject, CircleCollidable, Recyclable {
     private static final float FRAMES_PER_SECOND = 8.0f;
     private static final int[] RESOURCE_IDS = {
             R.mipmap.enemy_01, R.mipmap.enemy_02, R.mipmap.enemy_03, R.mipmap.enemy_04, R.mipmap.enemy_05,
@@ -21,14 +26,20 @@ public class Enemy implements GameObject, BoxCollidable, Recyclable {
             R.mipmap.enemy_16, R.mipmap.enemy_17, R.mipmap.enemy_18, R.mipmap.enemy_19, R.mipmap.enemy_20,
     };
     private static final String TAG = Enemy.class.getSimpleName();
-    private float x;
+    protected Vector2 pos = new Vector2();
     private GameBitmap bitmap;
-    private int level;
-    private float y;
-    private int speed;
+    protected int level;
+    protected int speed;
+    private float damage = 1.0f;
+    private CircleCollider circleCollider = new CircleCollider();
+    private float radius = 20 * GameView.MULTIPLIER;
 
-    private Enemy() {
+    protected Enemy() {
         Log.d(TAG, "Enemy constructor");
+    }
+
+    public float getDamage(){
+        return damage;
     }
 
     public static Enemy get(int level, int x, int y, int speed) {
@@ -42,40 +53,43 @@ public class Enemy implements GameObject, BoxCollidable, Recyclable {
         return enemy;
     }
 
-    private void init(int level, int x, int y, int speed) {
-        this.x = x;
-        this.y = y;
+    protected void init(int level, int x, int y, int speed) {
+        pos.x = x;
+        pos.y = y;
         this.speed = speed;
         this.level = level;
+        damage = level;
 
         int resId = RESOURCE_IDS[level - 1];
 
         this.bitmap = new AnimationGameBitmap(resId, FRAMES_PER_SECOND, 0);
-        this.bitmap.setScale(0.5f);
+        this.bitmap.setScale(0.4f);
     }
 
     @Override
     public void update() {
         MainGame game = MainGame.get();
-        y += speed * game.frameTime;
+        pos.y += speed * game.frameTime;
 
-        if (y > GameView.view.getHeight()) {
+        if (pos.y > GameView.view.getHeight()) {
             game.remove(this);
         }
     }
 
     @Override
     public void draw(Canvas canvas) {
-        bitmap.draw(canvas, x, y);
-    }
-
-    @Override
-    public void getBoundingRect(RectF rect) {
-        bitmap.getBoundingRect(x, y, rect);
+        bitmap.draw(canvas, pos.x, pos.y);
     }
 
     @Override
     public void recycle() {
         // 재활용통에 들어가는 시점에 불리는 함수. 현재는 할일없음.
+    }
+
+    @Override
+    public CircleCollider getCollider() {
+        circleCollider.pos.set(pos);
+        circleCollider.radius = radius;
+        return circleCollider;
     }
 }

@@ -1,14 +1,14 @@
-package kr.ac.kpu.game.s2016180024.Dodge.game;
+package kr.ac.kpu.game.s2016180024.cookierun.game;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import kr.ac.kpu.game.s2016180024.Dodge.R;
-import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
-import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
-import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
+import kr.ac.kpu.game.s2016180024.cookierun.R;
+import kr.ac.kpu.game.s2016180024.cookierun.framework.GameBitmap;
+import kr.ac.kpu.game.s2016180024.cookierun.framework.GameObject;
+import kr.ac.kpu.game.s2016180024.cookierun.framework.view.GameView;
 
 public class Score implements GameObject {
     private final Bitmap bitmap;
@@ -32,11 +32,6 @@ public class Score implements GameObject {
         this.right = right;
         this.top = top;
     }
-
-    public int getScore(){
-        return score;
-    }
-
     @Override
     public void update() {
         if (displayScore < score) {
@@ -52,20 +47,13 @@ public class Score implements GameObject {
         int x = right;
         int dw = (int) (nw * GameView.MULTIPLIER);
         int dh = (int) (nh * GameView.MULTIPLIER);
-        if(value == 0){
+        while (value > 0) {
+            int digit = value % 10;
+            src.set(digit * nw, 0, (digit + 1) * nw, nh);
             x -= dw;
-            src.set(value * nw, 0, (value + 1) * nw, nh);
             dst.set(x, top, x + dw, top + dh);
             canvas.drawBitmap(bitmap, src, dst, null);
-        }else {
-            while (value > 0) {
-                int digit = value % 10;
-                src.set(digit * nw, 0, (digit + 1) * nw, nh);
-                x -= dw;
-                dst.set(x, top, x + dw, top + dh);
-                canvas.drawBitmap(bitmap, src, dst, null);
-                value /= 10;
-            }
+            value /= 10;
         }
     }
 
