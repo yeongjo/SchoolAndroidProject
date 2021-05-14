@@ -1,4 +1,4 @@
-package kr.ac.kpu.game.s2016180024.cookierun.framework;
+package kr.ac.kpu.game.s2016180024.cookierun.framework.object;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -6,7 +6,10 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
 
+import kr.ac.kpu.game.s2016180024.cookierun.framework.BaseGame;
+import kr.ac.kpu.game.s2016180024.cookierun.framework.bitmap.GameBitmap;
 import kr.ac.kpu.game.s2016180024.cookierun.framework.view.GameView;
+import kr.ac.kpu.game.s2016180024.cookierun.framework.iface.GameObject;
 
 import static android.content.ContentValues.TAG;
 
@@ -32,7 +35,7 @@ public class HorizontalScrollBackground implements GameObject {
 
     @Override
     public void update() {
-        MainGame game = MainGame.get();
+        BaseGame game = BaseGame.get();
         float amount = speed * game.frameTime;
         dstRect.left += amount;
         dstRect.right += amount;

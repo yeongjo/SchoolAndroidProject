@@ -3,7 +3,7 @@ package kr.ac.kpu.game.s2016180024.cookierun.framework.utils;
 import android.graphics.RectF;
 import android.util.Log;
 
-import kr.ac.kpu.game.s2016180024.cookierun.framework.BoxCollidable;
+import kr.ac.kpu.game.s2016180024.cookierun.framework.iface.BoxCollidable;
 
 public class CollisionHelper {
     private static final String TAG = CollisionHelper.class.getSimpleName();

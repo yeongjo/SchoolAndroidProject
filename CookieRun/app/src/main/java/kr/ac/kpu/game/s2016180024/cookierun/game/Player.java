@@ -5,11 +5,9 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 
 import kr.ac.kpu.game.s2016180024.cookierun.R;
-import kr.ac.kpu.game.s2016180024.cookierun.framework.BoxCollidable;
-import kr.ac.kpu.game.s2016180024.cookierun.framework.GameBitmap;
-import kr.ac.kpu.game.s2016180024.cookierun.framework.GameObject;
-import kr.ac.kpu.game.s2016180024.cookierun.framework.IndexedAnimationGameBitmap;
-import kr.ac.kpu.game.s2016180024.cookierun.framework.MainGame;
+import kr.ac.kpu.game.s2016180024.cookierun.framework.iface.BoxCollidable;
+import kr.ac.kpu.game.s2016180024.cookierun.framework.iface.GameObject;
+import kr.ac.kpu.game.s2016180024.cookierun.framework.bitmap.IndexedAnimationGameBitmap;
 import kr.ac.kpu.game.s2016180024.cookierun.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.cookierun.framework.view.GameView;
 

@@ -1,9 +1,12 @@
-package kr.ac.kpu.game.s2016180024.cookierun.framework;
+package kr.ac.kpu.game.s2016180024.cookierun.framework.object;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
+
+import kr.ac.kpu.game.s2016180024.cookierun.framework.bitmap.GameBitmap;
+import kr.ac.kpu.game.s2016180024.cookierun.framework.iface.GameObject;
 
 public class ImageObject implements GameObject {
     private final Bitmap bitmap;
