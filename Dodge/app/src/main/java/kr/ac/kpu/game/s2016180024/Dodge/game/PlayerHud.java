@@ -37,7 +37,7 @@ public class PlayerHud  implements GameObject {
             staminaRectRight = rectLeft + (player.getStamina() * GameView.MULTIPLIER * sizeMultiplier);
             totalStaminaRectRight = rectLeft + (player.getTotalStamina() * GameView.MULTIPLIER * sizeMultiplier);
             hpRectRight = rectLeft + (player.getHp() * GameView.MULTIPLIER * sizeMultiplier);
-            prevHpRectRight = hpRectRight > prevHpRectRight ? hpRectRight : prevHpRectRight-frameTime*HEALTH_DECREASE_SPEED;
+            prevHpRectRight += (hpRectRight > prevHpRectRight? 1:-1) *frameTime*HEALTH_DECREASE_SPEED;
             totalHpRectRight = rectLeft + (player.getTotalHp() * GameView.MULTIPLIER * sizeMultiplier);
         }
     }
@@ -63,6 +63,14 @@ public class PlayerHud  implements GameObject {
         canvas.drawRect(dst, paint);
 
         resetRectPos();
+    }
+
+    public void reset(){
+        player = MainGame.get().getPlayer();
+        if(player != null) {
+            totalHpRectRight = rectLeft + (player.getTotalHp() * GameView.MULTIPLIER * sizeMultiplier);
+        }
+        prevHpRectRight = totalHpRectRight;
     }
 
     void moveRectToNextLine(){

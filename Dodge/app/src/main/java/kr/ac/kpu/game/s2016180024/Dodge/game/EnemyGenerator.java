@@ -60,7 +60,7 @@ public class EnemyGenerator implements GameObject {
         int tenth = GameView.view.getWidth() / 10;
         Random r = new Random();
         for (int i = 1; i <= 9; i += 2) {
-            int x = tenth * i;
+            int x = tenth * i + r.nextInt(tenth) - tenth/2;
             int y = 0;
             int level = wave / 5 - r.nextInt(3);
             int localChapter = level / ENEMY_TYPE_COUNT + 1;

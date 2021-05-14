@@ -150,6 +150,7 @@ public class MainGame {
         initialized = true;
 
         reset();
+        updateLeaderboard();
         return true;
     }
 
@@ -351,11 +352,6 @@ public class MainGame {
                 for(GameObject object : bullets) {
                     remove(object);
                 }
-                player.reset();
-                level.setLevel(1);
-                score.setScore(0);
-                enemyEngerator.reset();
-                isPlaying = true;
                 reset();
             }
         });
@@ -366,7 +362,12 @@ public class MainGame {
     }
 
     void reset(){
-        updateLeaderboard();
+        player.reset();
+        playerHud.reset();
+        level.setLevel(1);
+        score.setScore(0);
+        enemyEngerator.reset();
+        isPlaying = true;
     }
 
     void addToLeaderBoard(String name, int score){
@@ -387,8 +388,10 @@ public class MainGame {
                     if(value != null){
                         savedData.score = Math.max(((Long)value).intValue(), savedData.score);
                     }
-                    rootRef.child("user").child(name).setValue(savedData);
-
+                    rootRef.child("user").child(name).setValue(savedData).addOnCompleteListener(task1 -> {
+                        updateLeaderboard();
+                    });
+                    Log.d(TAG, "add score to leaderboard: "+savedData);
                 }
             }
         });
