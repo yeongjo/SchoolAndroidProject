@@ -42,8 +42,7 @@ public class IndexedAnimationGameBitmap extends AnimationGameBitmap {
         int h = frameHeight;
         float hw = fw / 2 * GameView.MULTIPLIER * scale;
         float hh = h / 2 * GameView.MULTIPLIER * scale;
-        srcRect.set(fw * frameIndex, 0, fw * frameIndex + fw, h);
         dstRect.set(x - hw, y - hh, x + hw, y + hh);
-        canvas.drawBitmap(bitmap, srcRect, dstRect, null);
+        canvas.drawBitmap(bitmap, srcRects.get(frameIndex), dstRect, null);
     }
 }

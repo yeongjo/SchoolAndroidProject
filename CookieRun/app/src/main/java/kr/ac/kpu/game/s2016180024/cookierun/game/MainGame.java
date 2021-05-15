@@ -14,7 +14,7 @@ public class MainGame extends BaseGame {
     private Score score;
 
     public enum Layer {
-        bg1, enemy, bullet, player, bg2, ui, controller, ENEMY_COUNT
+        bg1, platform, enemy, bullet, player, bg2, ui, controller, LAYER_COUNT
     }
 
     public void add(Layer layer, GameObject obj){
@@ -33,9 +33,9 @@ public class MainGame extends BaseGame {
         int w = GameView.view.getWidth();
         int h = GameView.view.getHeight();
 
-        initLayers(Layer.ENEMY_COUNT.ordinal());
+        initLayers(Layer.LAYER_COUNT.ordinal());
 
-        player = new Player(w/2, h - 300);
+        player = new Player(200, h - 300);
         //layers.get(Layer.player.ordinal()).add(player);
         add(Layer.player, player);
 
@@ -50,7 +50,14 @@ public class MainGame extends BaseGame {
         add(Layer.bg1, bg2);
 
         HorizontalScrollBackground clouds = new HorizontalScrollBackground(R.mipmap.cookie_run_bg_2, 30);
-        add(Layer.bg2, clouds);
+        add(Layer.bg1, clouds);
+
+        float tx = 100, ty = h-500;
+        while(tx < w) {
+            Platform platform = new Platform(Platform.Type.T_10x2, tx, ty);
+            add(Layer.platform, platform);
+            tx += platform.getDstWidth();
+        }
 
         initialized = true;
         return true;
@@ -65,15 +72,7 @@ public class MainGame extends BaseGame {
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
-            player.startDrag(event.getX(), event.getY());
-            return true;
-        }
-        if(action == MotionEvent.ACTION_MOVE){
-            player.dragging(event.getX(), event.getY());
-            return true;
-        }
-        if (action == MotionEvent.ACTION_UP){
-            player.endDrag(event.getX(), event.getY());
+            player.jump();
             return true;
         }
         return false;

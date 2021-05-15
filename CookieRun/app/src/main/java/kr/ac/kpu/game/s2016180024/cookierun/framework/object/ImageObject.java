@@ -10,8 +10,8 @@ import kr.ac.kpu.game.s2016180024.cookierun.framework.iface.GameObject;
 
 public class ImageObject implements GameObject {
     private final Bitmap bitmap;
-    private Rect srcRect;
-    private RectF dstRect;
+    protected Rect srcRect = new Rect();
+    protected RectF dstRect = new RectF();
 
     public ImageObject(int resId, float x, float y){
         bitmap = GameBitmap.load(resId);
@@ -33,5 +33,12 @@ public class ImageObject implements GameObject {
     @Override
     public void draw(Canvas canvas) {
         canvas.drawBitmap(bitmap, srcRect, dstRect, null);
+    }
+
+    public float getDstWidth() {
+        return dstRect.width();
+    }
+    public float getDstHeight() {
+        return dstRect.height();
     }
 }
