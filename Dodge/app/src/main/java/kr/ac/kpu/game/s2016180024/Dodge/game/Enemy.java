@@ -38,6 +38,7 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
         Log.d(TAG, "Enemy constructor");
     }
 
+    public void setDamage(float damage){this.damage = damage;}
     public float getDamage(){
         return damage;
     }
@@ -58,7 +59,6 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
         pos.y = y;
         this.speed = speed;
         this.level = level;
-        damage = level;
 
         int resId = RESOURCE_IDS[level - 1];
 

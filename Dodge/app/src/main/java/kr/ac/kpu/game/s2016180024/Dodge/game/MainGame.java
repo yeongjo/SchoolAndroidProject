@@ -23,11 +23,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Random;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
@@ -54,7 +55,7 @@ public class MainGame {
     private PlayerHud playerHud;
     private boolean initialized;
     private boolean isPlaying = true;
-    private EnemyGenerator enemyEngerator;
+    private EnemyGenerator enemyGenerator;
     private boolean isAskingItem;
     private LinearLayout linearLayout;
     private ArrayList<TextView> textViews = new ArrayList<>();
@@ -108,8 +109,8 @@ public class MainGame {
         player = new Player(w/2, h - 300);
         //layers.get(Layer.player.ordinal()).add(player);
         add(Layer.player, player);
-        enemyEngerator = new EnemyGenerator();
-        add(Layer.controller, enemyEngerator);
+        enemyGenerator = new EnemyGenerator();
+        add(Layer.controller, enemyGenerator);
 
         int margin = (int) (20 * GameView.MULTIPLIER);
         score = new Score(w - margin, margin);
@@ -189,16 +190,6 @@ public class MainGame {
         for (GameObject o1: enemies) {
             Enemy enemy = (Enemy) o1;
             boolean collided = false;
-//            for (GameObject o2: bullets) {
-//                Bullet bullet = (Bullet) o2;
-//                if (CollisionHelper.collides(enemy, bullet)) {
-//                    remove(bullet, false);
-//                    remove(enemy, false);
-//                    score.addScore(10);
-//                    collided = true;
-//                    break;
-//                }
-//            }
             if (collided) {
                 break;
             }
@@ -262,19 +253,16 @@ public class MainGame {
         remove(gameObject, true);
     }
     public void remove(GameObject gameObject, boolean delayed) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                for (ArrayList<GameObject> objects: layers) {
-                    boolean removed = objects.remove(gameObject);
-                    if (removed) {
-                        if (gameObject instanceof Recyclable) {
-                            ((Recyclable) gameObject).recycle();
-                            recycle(gameObject);
-                        }
-                        //Log.d(TAG, "Removed: " + gameObject);
-                        break;
+        Runnable runnable = () -> {
+            for (ArrayList<GameObject> objects: layers) {
+                boolean removed = objects.remove(gameObject);
+                if (removed) {
+                    if (gameObject instanceof Recyclable) {
+                        ((Recyclable) gameObject).recycle();
+                        recycle(gameObject);
                     }
+                    //Log.d(TAG, "Removed: " + gameObject);
+                    break;
                 }
             }
         };
@@ -292,16 +280,30 @@ public class MainGame {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.self);
         builder.setCancelable(false);
         builder.setTitle("select item");
-        int chapter = enemyEngerator.getChapter();
-        ArrayList<Item> items = new ArrayList<>(Arrays.asList(new statsItem(statsItem.Type.heal, 0),
-                new statsItem(statsItem.Type.addHp, 2 * chapter),
-                new statsItem(statsItem.Type.addStamina, 1 * chapter),
-                new statsItem(statsItem.Type.addRadius, 10 * chapter),
-                new statsItem(statsItem.Type.addRadius, -5 * chapter),
-                new statsItem(statsItem.Type.addSpeed, 80 * chapter),
-                new statsItem(statsItem.Type.subSpeedAddStamina, 2 * chapter)));
-        items.add(new LifeStealItem(0.1f));
-        items.add(new AttackRangeItem(0.1f));
+        int chapter = enemyGenerator.getChapter();
+        float difficulty = EnemyGenerator.difficultyMultiplier(chapter);
+        ArrayList<Item> itemLists = new ArrayList<>(Arrays.asList(new statsItem(statsItem.Type.heal, difficulty*1+3),
+                new statsItem(statsItem.Type.addHp, 1),
+                new statsItem(statsItem.Type.addStamina, 1 * difficulty),
+                new statsItem(statsItem.Type.addRadius, 10 * difficulty),
+                new statsItem(statsItem.Type.addRadius, -5 * difficulty),
+                new statsItem(statsItem.Type.addSpeed, 80 * difficulty),
+                new statsItem(statsItem.Type.subSpeedAddStamina, 1.5f * difficulty)));
+        itemLists.add(new LifeStealItem(0.1f));
+        itemLists.add(new AttackRangeItem(0.2f));
+        Random random = new Random();
+        ArrayList<Item> items = new ArrayList<>();
+        for (int i=0; i< itemLists.size(); ++i) {
+            int randomIndex =random.nextInt(itemLists.size());
+            if(i != randomIndex) {
+                Item temp = itemLists.get(i);
+                itemLists.set(i, itemLists.get(randomIndex));
+                itemLists.set(randomIndex, temp);
+            }
+        }
+        for (int i=0; i< 3; ++i) {
+            items.add(itemLists.get(i));
+        }
         String[] itemNames = new String[items.size()];
         int i = 0;
         for (Item item : items){
@@ -366,7 +368,7 @@ public class MainGame {
         playerHud.reset();
         level.setLevel(1);
         score.setScore(0);
-        enemyEngerator.reset();
+        enemyGenerator.reset();
         isPlaying = true;
     }
 

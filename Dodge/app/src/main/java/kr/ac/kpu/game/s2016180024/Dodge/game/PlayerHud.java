@@ -16,12 +16,13 @@ public class PlayerHud  implements GameObject {
     private Paint paint = new Paint();
     private RectF initialDstRect = new RectF();
     private float hpRectRight;
-    private float prevHpRectRight;
+    private float prevHpRectRight = 0;
     private float totalHpRectRight;
     private float rectLeft;
     private float staminaRectRight;
     private float totalStaminaRectRight;
     private float sizeMultiplier = 21.0f;
+    private float maxHealth = 88;
 
     public PlayerHud(int left, int top){
         this.rectLeft = left;
@@ -32,6 +33,7 @@ public class PlayerHud  implements GameObject {
     @Override
     public void update() {
         player = MainGame.get().getPlayer();
+        sizeMultiplier = GameView.view.getWidth() / (GameView.MULTIPLIER * 25);
         float frameTime = MainGame.get().frameTime;
         if(player != null) {
             staminaRectRight = rectLeft + (player.getStamina() * GameView.MULTIPLIER * sizeMultiplier);
@@ -68,6 +70,7 @@ public class PlayerHud  implements GameObject {
     public void reset(){
         player = MainGame.get().getPlayer();
         if(player != null) {
+            sizeMultiplier = GameView.view.getWidth() / (GameView.MULTIPLIER * 25);
             totalHpRectRight = rectLeft + (player.getTotalHp() * GameView.MULTIPLIER * sizeMultiplier);
         }
         prevHpRectRight = totalHpRectRight;

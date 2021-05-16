@@ -40,7 +40,7 @@ public class ParentEnemy extends Enemy {
                     if(x == 0 && y == 0){
                         continue;
                     }
-                    Enemy enemy = Enemy.get(Math.max(1, level-random.nextInt(4)-1), (int) pos.x + x * 100, (int) pos.y + y * 100, 100);
+                    Enemy enemy = Enemy.get(Math.max(1, level-random.nextInt(4)-1), (int) pos.x + x * 100, (int) pos.y + y * 100, 300+50*(level/5+1));
                     game.add(MainGame.Layer.enemy, enemy);
                 }
             }

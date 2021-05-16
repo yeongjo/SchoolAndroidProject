@@ -61,7 +61,7 @@ public class LaserEnemy extends FollowEnemy {
     public void draw(Canvas canvas) {
         paint.setColor((int)argbEvaluator.evaluate(remainTime/initalRemainTime,
                 0xffff0000, 0xff00ff00));
-        paint.setStrokeWidth(strokeWidth*remainTime/initalRemainTime);
+        paint.setStrokeWidth(strokeWidth*remainTime/initalRemainTime+2);
         Vector2 targetVec = vel.cpy().mul(5000).add(pos);
         canvas.drawLine(pos.x, pos.y, targetVec.x, targetVec.y, paint);
         super.draw(canvas);
