@@ -20,7 +20,7 @@
 
 **[완료]** 플레이어 이동/ 데미지/ 체력, 스테미나 바 
 
-**[완료] **게임 재시작, 아이템 습득 UI
+**[완료]** 게임 재시작, 아이템 습득 UI
 
 **[완료]** 점수, 레벨 UI
 
@@ -42,11 +42,13 @@
 
 ## 코드 구조
 
-MainGame - 모든 오브젝트를 렌더, 업데이트하고 충돌로직을 처리합니다
+**MainGame** - 모든 오브젝트를 렌더, 업데이트하고 충돌로직을 처리합니다. 플레이어 사망시 재시작 다이어로그를 띄웁니다.
 
-RankBoard - TextView를 화면에 덧그려 순위를 표시합니다, 파이어베이스에서 순위표를 받아오고 플레이어의 점수를 업로드합니다.
+**Vector2** - 회전, 각도, 거리, 정규화등 여러 연산들을 편하게 할 수 있게 돕는 클래스입니다.
 
-Player : GameObject, CircleCollidable
+**RankBoard** - TextView를 화면에 덧그려 순위를 표시합니다, 파이어베이스에서 순위표를 받아오고 플레이어의 점수를 업로드합니다. 로컬 데이터에 최근에 사용한 이름을 저장합니다.
+
+**Player** : GameObject, CircleCollidable
 
 - 드래그 관련 로직
   - 드래그 하여 이동
@@ -54,25 +56,41 @@ Player : GameObject, CircleCollidable
   - 드래그 시작위치와 종료 위치 표시를 범위로 표시
 - 데미지[+이펙트], 체력, 죽었는지 관리
 
-PlayerHUD - 플레이어의 체력, 스테미나를 표시해줍니다.
+**PlayerHUD** - 플레이어의 체력, 스테미나를 표시해줍니다.
 
-EnemyGenerator - 적 3마리당 레벨을 1씩 올리고, 레벨이 올라갈때마다 플레이어에게 아이템을 주는 함수를 호출하며, 챕터가 오를때마다 난이도 증가 공식에 따라 적 난이도를 올립니다.
+**EnemyGenerator** - 적 3마리당 레벨을 1씩 올리고, 레벨이 올라갈때마다 플레이어에게 랜덤 아이템을 고를 수 있는 창의 띄워주는 함수를 호출하며, 챕터가 오를때마다 난이도 증가 공식에 따라 적 난이도를 올립니다.
 
-CircleCollidable
+**CircleCollidable** - getCollider()를 통해 콜라이더를 얻어오는 함수가 있는 인터페이스입니다.
 
-​	CircleCollider getCollider()
+**CircleCollider** - 위치, 반지름을 가진 충돌영역 정보입니다.
 
-CircleCollider
+**Enemy** - 방향 따라 날아가는 적입니다.
 
-Enemy - 방향 따라 날아가는 적입니다.
+**FollowEnemy** : Enemy - 플레이어를 향해 휘는 적입니다.
 
-FollowEnemy : Enemy - 플레이어를 향해 휘는 적입니다.
+**LaserEnemy** : Enemy - 플레이어를 조준했다 잠시뒤에 빠르게 날아오는 적입니다.
 
-LaserEnemy : Enemy - 플레이어를 조준했다 잠시뒤에 빠르게 날아오는 적입니다.
+**ParentEnemy** : Enemy - 일정시간 뒤에 다른 적들을 주변에 소환합니다.
 
-ParentEnemy : Enemy - 일정시간 뒤에 다른 적들을 주변에 소환합니다.
+**RandomMoveEnemy** : Enemy - 움직였다 멈췄다하는 적입니다.
 
-RandomMoveEnemy : Enemy - 움직였다 멈췄다하는 적입니다.
+**Item** - 상태 별로 호출될수 있는 기본 함수 및 이름, 양에 관한 단위 텍스트 함수(a lot, a litte)가 정의된 클래스입니다.
+
+**AttackRangeItem** : Item - 플레이어가 소지하면 공격시 공격 범위가 늘어나는 클래스입니다.
+
+**StatsItem** : Item - 회복, 체력증가, 스테미나증가, 크기증가, 속도증가 등 스탯을 조절하는 클래스입니다.
+
+**LifeStealItem** : Item - 공격시 체력회복이 정의된 클래스입니다.
+
+**VerticalScrollBackground** - 세로 스크롤을 담당합니다.
+
+
+
+
+
+
+
+
 
 
 
