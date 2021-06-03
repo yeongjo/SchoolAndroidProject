@@ -13,6 +13,8 @@ public class LaserEnemy extends FollowEnemy {
 
     private final Paint paint = new Paint();
     private ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    private float straightMoveRemainTime;
+    private float initalStraightMoveRemainTime;
     private float remainTime;
     private float initalRemainTime;
     private float strokeWidth = 14;
@@ -34,6 +36,7 @@ public class LaserEnemy extends FollowEnemy {
         enemy.vel.y = 1;
         enemy.minAngle = minAngle;
         enemy.initalRemainTime = enemy.remainTime = remainTime;
+        enemy.initalStraightMoveRemainTime = enemy.straightMoveRemainTime = remainTime;
         enemy.strokeWidth = 5;
         enemy.isPlayedShotSound = false;
         enemy.paint.setStrokeWidth(enemy.strokeWidth);
@@ -43,6 +46,11 @@ public class LaserEnemy extends FollowEnemy {
     @Override
     public void update() {
         MainGame game = MainGame.get();
+        straightMoveRemainTime -= game.frameTime;
+        if(straightMoveRemainTime > 0){
+            pos.y += speed*0.1f * game.frameTime;
+            return;
+        }
         remainTime -= game.frameTime;
         if(remainTime > 0) {
             Player player = game.getPlayer();
@@ -67,7 +75,7 @@ public class LaserEnemy extends FollowEnemy {
 
     @Override
     public void draw(Canvas canvas) {
-        if(remainTime > 0) {
+        if(straightMoveRemainTime < 0 && remainTime > 0) {
             paint.setColor((int) argbEvaluator.evaluate(remainTime / initalRemainTime,
                     0xffff0000, 0xff00ff00));
             paint.setStrokeWidth(strokeWidth * remainTime / initalRemainTime + 2);
