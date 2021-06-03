@@ -2,14 +2,11 @@ package kr.ac.kpu.game.s2016180024.Dodge.game;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.util.Log;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
-import kr.ac.kpu.game.s2016180024.Dodge.framework.BoxCollidable;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollidable;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollider;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
@@ -17,6 +14,8 @@ import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.game.item.Item;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
+
+import static kr.ac.kpu.game.s2016180024.Dodge.ui.activity.MainActivity.RECIPROCAL_PIXEL_MULTIPLIER;
 
 public class Player implements GameObject, CircleCollidable {
     private static final String TAG = Player.class.getSimpleName();
@@ -36,7 +35,7 @@ public class Player implements GameObject, CircleCollidable {
     private boolean isMoving = false;
     private boolean isDragging = false;
     private float dragMultiplier = 1.5f;
-    private GameBitmap planeBitmap;
+    private GameBitmap playerBitmap;
     private GameBitmap fireBitmap;
     private Vector2 normalizedTargetDelta = new Vector2();
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -46,6 +45,8 @@ public class Player implements GameObject, CircleCollidable {
     private float stamina = INIT_STAMINA;
     private float totalHp = INIT_HP;
     private float hp = INIT_HP;
+    private float exp = 0;
+    private int level = 1;
     private float staminaRegenSpeed = 1;
     private Vector2 targetRightVector = new Vector2();
     private CircleCollider circleCollider = new CircleCollider();
@@ -55,9 +56,9 @@ public class Player implements GameObject, CircleCollidable {
 
     public Player(float x, float y) {
         initPos.set(pos.set(x,y));
-        this.planeBitmap = new GameBitmap(R.mipmap.fighter);
-        this.fireBitmap = new GameBitmap(R.mipmap.laser_0);
-        paint.setStrokeWidth(14);
+        this.playerBitmap = new GameBitmap(R.mipmap.player);
+        this.fireBitmap = new GameBitmap(R.mipmap.player_hit_effect);
+        paint.setStrokeWidth(2);
         paint.setStyle(Paint.Style.STROKE);
     }
 
@@ -70,6 +71,8 @@ public class Player implements GameObject, CircleCollidable {
         targetDelta.set(0,0);
         isMoving = false;
         isDragging = false;
+        exp = 0;
+        level = 1;
         isDieNextFrame = isDead = false;
         additiveAttackRadius = 1;
         items.clear();
@@ -103,14 +106,14 @@ public class Player implements GameObject, CircleCollidable {
         if(draggingTargetDelta.x + pos.x < 0){
             draggingTargetDelta.x = -pos.x;
         }
-        if(draggingTargetDelta.x + pos.x > GameView.view.getWidth()){
-            draggingTargetDelta.x = GameView.view.getWidth() - pos.x;
+        if(draggingTargetDelta.x + pos.x > GameView.self.getWidth()){
+            draggingTargetDelta.x = GameView.self.getWidth() - pos.x;
         }
         if(draggingTargetDelta.y + pos.y < 0){
             draggingTargetDelta.y = -pos.y;
         }
-        if(draggingTargetDelta.y + pos.y > GameView.view.getHeight()){
-            draggingTargetDelta.y = GameView.view.getHeight() - pos.y;
+        if(draggingTargetDelta.y + pos.y > GameView.self.getHeight()){
+            draggingTargetDelta.y = GameView.self.getHeight() - pos.y;
         }
     }
 
@@ -190,20 +193,17 @@ public class Player implements GameObject, CircleCollidable {
         Log.d(TAG, "player takeDamage: "+damage);
     }
 
-    public void showAttackEffect(){
-        fireTime = 0;
-    }
-
 
     public boolean isDead(){
         return isDead;
     }
 
     public void draw(Canvas canvas) {
-        planeBitmap.draw(canvas, pos.x, pos.y);
-        float radius = this.radius * additiveAttackRadius;
+        playerBitmap.setScale(radius * 0.0111f);
+        playerBitmap.draw(canvas, pos.x, pos.y);
+        float radius = this.radius * additiveAttackRadius * RECIPROCAL_PIXEL_MULTIPLIER;
         if(isDragging){
-            paint.setColor(0xff00ff00);   //color.Green
+            paint.setColor(0xff48ffaa);   //color.Green
             targetRightVector.set(draggingTargetDelta.x, draggingTargetDelta.y).normalize().rotate(90).mul(radius);
             canvas.drawLine(pos.x+targetRightVector.x, pos.y+targetRightVector.y, pos.x + draggingTargetDelta.x+targetRightVector.x, pos.y + draggingTargetDelta.y+targetRightVector.y, paint);
             canvas.drawLine(pos.x-targetRightVector.x, pos.y-targetRightVector.y, pos.x + draggingTargetDelta.x-targetRightVector.x, pos.y + draggingTargetDelta.y-targetRightVector.y, paint);
@@ -211,7 +211,7 @@ public class Player implements GameObject, CircleCollidable {
             canvas.drawCircle(pos.x, pos.y, radius, paint);
         }
         if(isMoving){
-            paint.setColor(0xffff0000);   //color.RED
+            paint.setColor(0xffffcf48);   //color.yellow
             targetRightVector.set(targetDelta.x, targetDelta.y).normalize().rotate(90).mul(radius);
             canvas.drawLine(pos.x+targetRightVector.x, pos.y+targetRightVector.y, pos.x + targetDelta.x+targetRightVector.x, pos.y + targetDelta.y+targetRightVector.y, paint);
             canvas.drawLine(pos.x-targetRightVector.x, pos.y-targetRightVector.y, pos.x + targetDelta.x-targetRightVector.x, pos.y + targetDelta.y-targetRightVector.y, paint);
@@ -220,7 +220,7 @@ public class Player implements GameObject, CircleCollidable {
         }
 
         if (fireTime < LASER_DURATION) {
-            fireBitmap.draw(canvas, pos.x, pos.y - 50);
+            fireBitmap.draw(canvas, pos.x, pos.y);
         }
     }
 
@@ -267,7 +267,7 @@ public class Player implements GameObject, CircleCollidable {
     @Override
     public CircleCollider getCollider() {
         circleCollider.pos.set(pos);
-        circleCollider.radius = radius * additiveAttackRadius;
+        circleCollider.radius = radius * additiveAttackRadius  * RECIPROCAL_PIXEL_MULTIPLIER;
         return circleCollider;
     }
 
@@ -284,5 +284,29 @@ public class Player implements GameObject, CircleCollidable {
 
     public void addSpeed(float amount) {
         speed += amount;
+    }
+
+    public float getExp() {
+        return exp;
+    }
+
+    public void addExp(float exp){
+        this.exp += exp;
+
+    }
+
+    public float getTotalExp(){
+        return level+level*10;
+    }
+
+    public boolean checkExpToLevelUp(){
+        float requireExp = getTotalExp();
+        if(this.exp >= requireExp){
+            this.exp -= requireExp;
+            level++;
+            MainGame.get().askItem();
+            return true;
+        }
+        return false;
     }
 }

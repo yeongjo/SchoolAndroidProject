@@ -1,7 +1,9 @@
 package kr.ac.kpu.game.s2016180024.Dodge.game.item;
 
+import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.game.Enemy;
 import kr.ac.kpu.game.s2016180024.Dodge.game.Player;
+import kr.ac.kpu.game.s2016180024.Dodge.ui.activity.MainActivity;
 
 public class LifeStealItem extends Item {
 
@@ -17,21 +19,21 @@ public class LifeStealItem extends Item {
 
     public String toString(){
 
-        return getAmountString()+" Life Steal";
+        return getAmountString()+" "+MainActivity.self.getString(R.string.life_steal);
     }
 
     private String getAmountString(){
         float absAmount = Math.abs(stealRatio);
         float multiplier = 0.1f;
         if(absAmount >= 4*multiplier){
-            return "a lot of";
+            return MainActivity.self.getString(R.string.a_lot_of);
         }
         if(absAmount >= 3*multiplier){
-            return "a bunch of";
+            return MainActivity.self.getString(R.string.a_bunch_of);
         }
         if(absAmount >= 2*multiplier){
             return "";
         }
-        return "a little of";
+        return MainActivity.self.getString(R.string.a_little_of);
     }
 }

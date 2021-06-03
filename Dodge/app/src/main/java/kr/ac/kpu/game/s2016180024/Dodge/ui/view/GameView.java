@@ -10,23 +10,23 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.game.MainGame;
 
 public class GameView extends View {
     private static final String TAG = GameView.class.getSimpleName();
 
-    public static float MULTIPLIER = 1.2f;
+    public static float MULTIPLIER;
     //    private Ball b1, b2;
 
     private long lastFrame;
-    public static GameView view;
+    public static GameView self;
 
     public GameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        GameView.view = this;
+        GameView.self = this;
         Sound.init(context);
-//        startUpdating();
     }
 
     @Override

@@ -12,12 +12,12 @@ public class AnimationGameBitmap extends kr.ac.kpu.game.s2016180024.Dodge.framew
     private final int frameWidth;
     private final long createdOn;
     private int frameIndex;
-    private final float framesPerSecond;
+    private final float secondPerFrame;
     private final int frameCount;
 
     protected Rect srcRect = new Rect();
 
-    public AnimationGameBitmap(int resId, float framesPerSecond, int frameCount) {
+    public AnimationGameBitmap(int resId, float secondPerFrame, int frameCount) {
         super(resId);
         //bitmap = GameBitmap.load(resId);
         imageWidth = bitmap.getWidth();
@@ -25,26 +25,24 @@ public class AnimationGameBitmap extends kr.ac.kpu.game.s2016180024.Dodge.framew
         if (frameCount == 0) {
             frameCount = imageWidth / imageHeight;
         }
+        if (frameCount == 0) {
+            frameCount = 1;
+        }
         frameWidth = imageWidth / frameCount;
-        this.framesPerSecond = framesPerSecond;
+        this.secondPerFrame = secondPerFrame;
         this.frameCount = frameCount;
         createdOn = System.currentTimeMillis();
         frameIndex = 0;
     }
 
-    //    public void update() {
-//        int elapsed = (int)(System.currentTimeMillis() - createdOn);
-//        frameIndex = Math.round(elapsed * 0.001f * framesPerSecond) % frameCount;
-//    }
-
     public void draw(Canvas canvas, float x, float y) {
         int elapsed = (int)(System.currentTimeMillis() - createdOn);
-        frameIndex = Math.round(elapsed * 0.001f * framesPerSecond) % frameCount;
+        frameIndex = Math.round(elapsed * 0.001f * secondPerFrame) % frameCount;
 
         int fw = frameWidth;
         int h = imageHeight;
-        float hw = fw / 2 * GameView.MULTIPLIER * scale;
-        float hh = h / 2 * GameView.MULTIPLIER * scale;
+        float hw = fw / 2.0f * GameView.MULTIPLIER * scale;
+        float hh = h / 2.0f * GameView.MULTIPLIER * scale;
         srcRect.set(fw * frameIndex, 0, fw * frameIndex + fw, h);
         dstRect.set(x - hw, y - hh, x + hw, y + hh);
         canvas.drawBitmap(bitmap, srcRect, dstRect, null);

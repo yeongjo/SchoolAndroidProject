@@ -1,6 +1,8 @@
 package kr.ac.kpu.game.s2016180024.Dodge.game.item;
 
+import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.game.Player;
+import kr.ac.kpu.game.s2016180024.Dodge.ui.activity.MainActivity;
 
 public class statsItem extends Item {
     public Type type;
@@ -19,7 +21,7 @@ public class statsItem extends Item {
     public void enterActiveEffect(Player player){
         switch(type){
             case heal:
-                player.heal(10000);
+                player.heal(10);
                 break;
             case addHp:
                 player.addHp(amount);
@@ -48,9 +50,9 @@ public class statsItem extends Item {
     @Override
     public String toString() {
         if(type == Type.heal){
-            return "Heal";
+            return MainActivity.self.getString(R.string.heal);
         }
-        return getTypeName()+" "+getAmountString()+" "+(amount>=0?"increase":"decrease");
+        return getTypeName()+" "+getAmountString()+" "+(amount>=0?MainActivity.self.getString(R.string.increase):MainActivity.self.getString(R.string.decrease));
     }
 
     private String getAmountString(){
@@ -65,15 +67,15 @@ public class statsItem extends Item {
                 break;
         }
         if(absAmount >= 4*multiplier){
-            return "a lot of";
+            return MainActivity.self.getString(R.string.a_lot_of);
         }
         if(absAmount >= 3*multiplier){
-            return "a bunch of";
+            return MainActivity.self.getString(R.string.a_bunch_of);
         }
         if(absAmount >= 2*multiplier){
             return "";
         }
-        return "a little of";
+        return MainActivity.self.getString(R.string.a_little_of);
     }
 
     private String getTypeName(){
@@ -81,15 +83,15 @@ public class statsItem extends Item {
             case heal:
                 return "";
             case addHp:
-                return "HP";
+                return MainActivity.self.getString(R.string.hp);
             case addStamina:
-                return "Stamina";
+                return MainActivity.self.getString(R.string.stamina);
             case addRadius:
-                return "Radius";
+                return MainActivity.self.getString(R.string.radius);
             case addSpeed:
-                return "Speed";
+                return MainActivity.self.getString(R.string.speed);
             case subSpeedAddStamina:
-                return "Speed a little of decrease, Stamina";
+                return MainActivity.self.getString(R.string.speed_a_little_of_decrease_stamina);
         }
         return "";
     }

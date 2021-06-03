@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dodge</string>
+    <string name="select_item">아이템을 선택하세요</string>
+    <string name="type_name">이름을 입력하세요..</string>
+    <string name="your_score_is">"당신의 점수는 "</string>
+    <string name="do_you_want_to_restart_game">게임 다시 하실래요?</string>
+    <string name="yes">네!</string>
+    <string name="no">아녀..</string>
+    <string name="attack_range_increase">공격 범위 증가</string>
+    <string name="decrease">감소</string>
+    <string name="a_lot_of">많이</string>
+    <string name="a_bunch_of">조금 많이</string>
+    <string name="a_little_of">조금</string>
+    <string name="life_steal">흡혈</string>
+    <string name="hp">체력</string>
+    <string name="stamina">스테미나</string>
+    <string name="radius">크기</string>
+    <string name="speed">속도</string>
+    <string name="speed_a_little_of_decrease_stamina">속도 조금 감소, 스테미나</string>
+    <string name="heal">회복</string>
+    <string name="increase">증가</string>
+</resources>

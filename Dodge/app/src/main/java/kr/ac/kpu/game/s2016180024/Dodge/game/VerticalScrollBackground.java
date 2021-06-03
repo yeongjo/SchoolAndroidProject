@@ -24,7 +24,7 @@ public class VerticalScrollBackground implements GameObject {
         srcRect.set(0,0,w,h);
         float l = 0;
         float t = 0;
-        float r = GameView.view.getWidth();
+        float r = GameView.self.getWidth();
         float b = r + h / w;
         dstRect.set(l,t,r,b);
     }
@@ -40,8 +40,8 @@ public class VerticalScrollBackground implements GameObject {
 
     @Override
     public void draw(Canvas canvas) {
-        int vw = GameView.view.getWidth();
-        int vh = GameView.view.getHeight();
+        int vw = GameView.self.getWidth();
+        int vh = GameView.self.getHeight();
         int iw = bitmap.getWidth();
         int ih = bitmap.getHeight();
         int dh = vw * ih / iw;

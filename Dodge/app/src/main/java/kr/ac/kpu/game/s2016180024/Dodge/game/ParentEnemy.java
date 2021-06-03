@@ -5,6 +5,9 @@ import android.graphics.Paint;
 
 import java.util.Random;
 
+import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
+
 // 다른 적들을 만듭니다
 public class ParentEnemy extends Enemy {
     private static Random random = new Random();
@@ -26,7 +29,11 @@ public class ParentEnemy extends Enemy {
         }
 
         enemy.init(level, x, y, speed);
-        enemy.remainTime = random.nextFloat() * remainTime;
+        enemy.remainTime = (0.5f-random.nextFloat())*0.5f + remainTime;
+        int frameCount = 4;
+        float secondPerFrame = frameCount / remainTime;
+        secondPerFrame -= secondPerFrame * (1.0f/frameCount);
+        enemy.bitmap = new AnimationGameBitmap(R.mipmap.enemy_04, secondPerFrame, frameCount);
         return enemy;
     }
 
@@ -52,6 +59,6 @@ public class ParentEnemy extends Enemy {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        canvas.drawCircle(pos.x, pos.y, remainTime*10, paint);
+//        canvas.drawCircle(pos.x, pos.y, remainTime*10, paint);
     }
 }

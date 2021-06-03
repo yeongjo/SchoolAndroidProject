@@ -16,6 +16,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static MainActivity self;
     private static final String TAG = MainActivity.class.getSimpleName();
+    public static float PIXEL_MULTIPLIER = 2.5f;
+    public static float RECIPROCAL_PIXEL_MULTIPLIER = 1/2.5f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,6 @@ public class MainActivity extends AppCompatActivity {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         Log.d(TAG, "Density: " + metrics.density + " DPI:" + metrics.densityDpi);
-        GameView.MULTIPLIER = metrics.density;
+        GameView.MULTIPLIER = metrics.density * PIXEL_MULTIPLIER;
     }
 }

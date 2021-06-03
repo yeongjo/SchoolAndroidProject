@@ -16,7 +16,7 @@ public class GameBitmap {
     public static Bitmap load(int resId) {
         Bitmap bitmap = bitmaps.get(resId);
         if (bitmap == null) {
-            Resources res = GameView.view.getResources();
+            Resources res = GameView.self.getResources();
             BitmapFactory.Options opts = new BitmapFactory.Options();
             opts.inScaled = false;
             bitmap = BitmapFactory.decodeResource(res, resId, opts);
@@ -39,7 +39,6 @@ public class GameBitmap {
     public void draw(Canvas canvas, float x, float y) {
         int hw = getWidth() / 2;
         int hh = getHeight() / 2;
-        //Rect srcRect = new Rect(left, )
         float dl = x - hw * GameView.MULTIPLIER * scale;
         float dt = y - hh * GameView.MULTIPLIER * scale;
         float dr = x + hw * GameView.MULTIPLIER * scale;
@@ -59,7 +58,6 @@ public class GameBitmap {
     public void getBoundingRect(float x, float y, RectF rect) {
         int hw = getWidth() / 2;
         int hh = getHeight() / 2;
-        //Rect srcRect = new Rect(left, )
         float dl = x - hw * GameView.MULTIPLIER * scale;
         float dt = y - hh * GameView.MULTIPLIER * scale;
         float dr = x + hw * GameView.MULTIPLIER * scale;

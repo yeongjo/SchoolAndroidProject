@@ -31,7 +31,7 @@ public class LaserEnemy extends FollowEnemy {
         enemy.vel.y = 1;
         enemy.minAngle = minAngle;
         enemy.initalRemainTime = enemy.remainTime = remainTime;
-        enemy.strokeWidth = 14;
+        enemy.strokeWidth = 5;
         enemy.paint.setStrokeWidth(enemy.strokeWidth);
         return enemy;
     }
@@ -52,18 +52,20 @@ public class LaserEnemy extends FollowEnemy {
         }
         pos.add(vel.cpy().mul(speed * game.frameTime));
 
-        if (pos.y > GameView.view.getHeight()) {
+        if (pos.y > GameView.self.getHeight()) {
             game.remove(this);
         }
     }
 
     @Override
     public void draw(Canvas canvas) {
-        paint.setColor((int)argbEvaluator.evaluate(remainTime/initalRemainTime,
-                0xffff0000, 0xff00ff00));
-        paint.setStrokeWidth(strokeWidth*remainTime/initalRemainTime+2);
-        Vector2 targetVec = vel.cpy().mul(5000).add(pos);
-        canvas.drawLine(pos.x, pos.y, targetVec.x, targetVec.y, paint);
+        if(remainTime > 0) {
+            paint.setColor((int) argbEvaluator.evaluate(remainTime / initalRemainTime,
+                    0xffff0000, 0xff00ff00));
+            paint.setStrokeWidth(strokeWidth * remainTime / initalRemainTime + 2);
+            Vector2 targetVec = vel.cpy().mul(5000).add(pos);
+            canvas.drawLine(pos.x, pos.y, targetVec.x, targetVec.y, paint);
+        }
         super.draw(canvas);
     }
 }

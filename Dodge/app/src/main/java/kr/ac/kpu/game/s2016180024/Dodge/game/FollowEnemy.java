@@ -37,7 +37,7 @@ public class FollowEnemy extends Enemy {
         vel.rotate(deltaAngle * game.frameTime);
         pos.add(vel.cpy().mul(speed * game.frameTime));
 
-        if (pos.y > GameView.view.getHeight()) {
+        if (pos.y > GameView.self.getHeight()) {
             game.remove(this);
         }
     }

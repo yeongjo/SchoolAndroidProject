@@ -8,11 +8,13 @@ import android.util.Log;
 
 import java.util.HashMap;
 
+import kr.ac.kpu.game.s2016180024.Dodge.R;
+
 public class Sound {
     private static final String TAG = Sound.class.getSimpleName();
     private static SoundPool soundPool;
     private static final int[] SOUND_IDS = {
-//            R.raw.hadouken
+            R.raw.bgm, R.raw.btn_click, R.raw.get_exp_item, R.raw.item_selected
     };
     private static HashMap<Integer, Integer> soundIdMap = new HashMap<>();
 
@@ -37,9 +39,17 @@ public class Sound {
         }
     }
     public static int play(int resId) {
+        return play(resId, 0);
+    }
+    public static int play(int resId, int isLoop) {
         Log.d(TAG, "play: " + resId);
         int soundId = soundIdMap.get(resId);
-        int streamId = soundPool.play(soundId, 1f, 1f, 1, 0, 1f);
+        int streamId = soundPool.play(soundId, 1f, 1f, 1, isLoop, 1f);
         return streamId;
+    }
+    public static void stop(int resId) {
+        Log.d(TAG, "stop: " + resId);
+        int soundId = soundIdMap.get(resId);
+        soundPool.stop(soundId);
     }
 }

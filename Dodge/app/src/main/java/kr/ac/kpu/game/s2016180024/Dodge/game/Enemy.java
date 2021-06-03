@@ -1,14 +1,10 @@
 package kr.ac.kpu.game.s2016180024.Dodge.game;
 
 import android.graphics.Canvas;
-import android.graphics.RectF;
 import android.util.Log;
-
-import java.util.Vector;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
-import kr.ac.kpu.game.s2016180024.Dodge.framework.BoxCollidable;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollidable;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollider;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
@@ -17,8 +13,10 @@ import kr.ac.kpu.game.s2016180024.Dodge.framework.Recyclable;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
+import static kr.ac.kpu.game.s2016180024.Dodge.ui.activity.MainActivity.RECIPROCAL_PIXEL_MULTIPLIER;
+
 public class Enemy implements GameObject, CircleCollidable, Recyclable {
-    private static final float FRAMES_PER_SECOND = 8.0f;
+    protected static final float FRAMES_PER_SECOND = 8.0f;
     private static final int[] RESOURCE_IDS = {
             R.mipmap.enemy_01, R.mipmap.enemy_02, R.mipmap.enemy_03, R.mipmap.enemy_04, R.mipmap.enemy_05,
             R.mipmap.enemy_06, R.mipmap.enemy_07, R.mipmap.enemy_08, R.mipmap.enemy_09, R.mipmap.enemy_10,
@@ -27,12 +25,14 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
     };
     private static final String TAG = Enemy.class.getSimpleName();
     protected Vector2 pos = new Vector2();
-    private GameBitmap bitmap;
+    protected GameBitmap bitmap;
+    private GameBitmap hitEffectBitmap;
     protected int level;
     protected int speed;
     private float damage = 1.0f;
     private CircleCollider circleCollider = new CircleCollider();
     private float radius = 20 * GameView.MULTIPLIER;
+    private boolean isHitPlayer = false;
 
     protected Enemy() {
         Log.d(TAG, "Enemy constructor");
@@ -40,6 +40,7 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
 
     public void setDamage(float damage){this.damage = damage;}
     public float getDamage(){
+        isHitPlayer= true;
         return damage;
     }
 
@@ -59,11 +60,18 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
         pos.y = y;
         this.speed = speed;
         this.level = level;
+        isHitPlayer= false;
 
         int resId = RESOURCE_IDS[level - 1];
 
+        hitEffectBitmap = new GameBitmap(R.mipmap.enemy_hit_effect);
         this.bitmap = new AnimationGameBitmap(resId, FRAMES_PER_SECOND, 0);
-        this.bitmap.setScale(0.4f);
+//        this.bitmap.setScale(0.4f);
+    }
+
+    public void destroy(){
+        MainGame game = MainGame.get();
+        game.add(MainGame.Layer.effect, HitEffect.get(R.mipmap.enemy_hit_effect, pos, 0.1f));
     }
 
     @Override
@@ -71,13 +79,16 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
         MainGame game = MainGame.get();
         pos.y += speed * game.frameTime;
 
-        if (pos.y > GameView.view.getHeight()) {
+        if (pos.y > GameView.self.getHeight()) {
             game.remove(this);
         }
     }
 
     @Override
     public void draw(Canvas canvas) {
+        if(isHitPlayer) {
+            hitEffectBitmap.draw(canvas, pos.x, pos.y);
+        }
         bitmap.draw(canvas, pos.x, pos.y);
     }
 
@@ -89,7 +100,7 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
     @Override
     public CircleCollider getCollider() {
         circleCollider.pos.set(pos);
-        circleCollider.radius = radius;
+        circleCollider.radius = radius * RECIPROCAL_PIXEL_MULTIPLIER;
         return circleCollider;
     }
 }

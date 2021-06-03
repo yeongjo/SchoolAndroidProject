@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">Dodge</string>
+    <string name="select_item">Select your item</string>
+    <string name="type_name">Type name..</string>
+    <string name="your_score_is">Your score is</string>
+    <string name="do_you_want_to_restart_game">Do you want to restart game?</string>
+    <string name="yes">Yes!</string>
+    <string name="no">No..</string>
+    <string name="a_lot_of">a lot of</string>
+    <string name="a_bunch_of">a bunch of</string>
+    <string name="a_little_of">a little of</string>
+    <string name="life_steal">Life steal</string>
+    <string name="hp">HP</string>
+    <string name="stamina">Stamina</string>
+    <string name="radius">Radius</string>
+    <string name="speed">Speed</string>
+    <string name="speed_a_little_of_decrease_stamina">Speed a little of decrease, Stamina</string>
+    <string name="heal">Heal</string>
+    <string name="increase">increase</string>
+    <string name="decrease">decrease</string>
+    <string name="attack_range_increase">Attack range increase</string>
 </resources>

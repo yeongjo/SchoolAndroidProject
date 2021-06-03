@@ -1,6 +1,8 @@
 package kr.ac.kpu.game.s2016180024.Dodge.game.item;
 
+import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.game.Player;
+import kr.ac.kpu.game.s2016180024.Dodge.ui.activity.MainActivity;
 
 public class AttackRangeItem extends Item {
     float amount = 1;
@@ -18,6 +20,6 @@ public class AttackRangeItem extends Item {
     }
 
     public String toString(){
-        return "Attack range increase";
+        return MainActivity.self.getString(R.string.attack_range_increase);
     }
 }

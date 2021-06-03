@@ -4,27 +4,23 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,7 +29,9 @@ import java.util.Random;
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Recyclable;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.game.item.AttackRangeItem;
+import kr.ac.kpu.game.s2016180024.Dodge.game.item.ColliableItem;
 import kr.ac.kpu.game.s2016180024.Dodge.game.item.Item;
 import kr.ac.kpu.game.s2016180024.Dodge.game.item.LifeStealItem;
 import kr.ac.kpu.game.s2016180024.Dodge.game.item.statsItem;
@@ -43,34 +41,29 @@ import kr.ac.kpu.game.s2016180024.Dodge.utils.CollisionHelper;
 
 public class MainGame {
     private static final String TAG = MainGame.class.getSimpleName();
-    private static final String SAVE_KEY = "PrevName";
-    // singleton
-    public float frameTime;
-    private static MainGame instance;
+    private static final String SAVE_KEY = "PrevNam" + "e";
     private static HashMap<Class, ArrayList<GameObject>> recycleBin = new HashMap<>();
-    ArrayList<ArrayList<GameObject>> layers;
+    private static MainGame self;
+
+    public float frameTime;
+    public ArrayList<ArrayList<GameObject>> layers;
     private Player player;
     private Score score;
-    private Level level;
     private PlayerHud playerHud;
     private boolean initialized;
     private boolean isPlaying = true;
     private EnemyGenerator enemyGenerator;
-    private boolean isAskingItem;
-    private LinearLayout linearLayout;
-    private ArrayList<TextView> textViews = new ArrayList<>();
-    private DatabaseReference rootRef;
-    private ArrayList<SavedData> rankBoards = new ArrayList<>();
+    private Leaderboard leaderboard;
 
     public enum Layer {
-        bg1, bg2, enemy, bullet, player, ui, controller, ENEMY_COUNT
+        bg1, bg2, enemy, bullet, item, player, effect, ui, controller, ENEMY_COUNT
     }
 
     public static MainGame get() {
-        if (instance == null) {
-            instance = new MainGame();
+        if (self == null) {
+            self = new MainGame();
         }
-        return instance;
+        return self;
     }
 
     public Score getScore(){
@@ -101,27 +94,34 @@ public class MainGame {
         if (initialized) {
             return false;
         }
-        int w = GameView.view.getWidth();
-        int h = GameView.view.getHeight();
+        int w = GameView.self.getWidth();
+        int h = GameView.self.getHeight();
 
         initLayers(Layer.ENEMY_COUNT.ordinal());
 
-        player = new Player(w/2, h - 300);
+//        Sound.play(R.raw.bgm, 1);
+        Sound.play(R.raw.btn_click, 1);
+
+        player = new Player(w/2.0f, h - 300);
         //layers.get(Layer.player.ordinal()).add(player);
         add(Layer.player, player);
         enemyGenerator = new EnemyGenerator();
         add(Layer.controller, enemyGenerator);
 
-        int margin = (int) (20 * GameView.MULTIPLIER);
-        score = new Score(w - margin, margin);
+        int marginX = (int) (5 * GameView.MULTIPLIER);
+        int marginY = (int) (20 * GameView.MULTIPLIER);
+        score = new Score(w - marginX, marginY);
         score.setScore(0);
         add(Layer.ui, score);
 
-        level = new Level(w - margin, margin + 100);
-        level.setLevel(1);
-        add(Layer.ui, level);
+        leaderboard = new Leaderboard(w - marginX, marginY + GameView.MULTIPLIER*21);
+        add(Layer.ui, leaderboard);
 
-        playerHud = new PlayerHud(margin, margin);
+//        level = new Level(w - margin, margin + 100);
+//        level.setLevel(1);
+//        add(Layer.ui, level);
+
+        playerHud = new PlayerHud(0, 0);
         add(Layer.ui, playerHud);
 
         VerticalScrollBackground bg = new VerticalScrollBackground(R.mipmap.bg_city, 10);
@@ -130,28 +130,11 @@ public class MainGame {
         VerticalScrollBackground clouds = new VerticalScrollBackground(R.mipmap.clouds, 20);
         add(Layer.bg2, clouds);
 
-        linearLayout = new LinearLayout(MainActivity.self);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        layoutParams.leftMargin = margin;
-        layoutParams.topMargin = margin;
-        linearLayout.setLayoutParams(layoutParams);
-        ConstraintLayout constraintLayout = MainActivity.self.findViewById(R.id.constraintLayout);
-        constraintLayout.addView(linearLayout);
-
-        for (int i= 0; i < 10; ++i) {
-            TextView textView = new TextView(MainActivity.self);
-            textView.setTextSize(GameView.MULTIPLIER * 7);
-            textViews.add(textView);
-            linearLayout.addView(textView);
-        }
-
-        rootRef = FirebaseDatabase.getInstance("https://dodge-a8173-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference();
 
         initialized = true;
 
         reset();
-        updateLeaderboard();
+        leaderboard.updateLeaderboard();
         return true;
     }
 
@@ -164,17 +147,6 @@ public class MainGame {
 
     public void update() {
         if (!isPlaying) return;
-        while(rankBoards.size() > 10) {
-            rankBoards.remove(rankBoards.size() - 1);
-        }
-        int i = rankBoards.size()-1;
-        for (SavedData data : rankBoards) {
-            int rankIndex = i;
-            textViews.get(rankIndex).setText((rankIndex+1) + " " + data.id +": " + data.score);
-            --i;
-        }
-
-
         for (ArrayList<GameObject> objects: layers) {
             for (GameObject o : objects) {
                 o.update();
@@ -185,8 +157,16 @@ public class MainGame {
             return;
         }
 
+        if(player.checkExpToLevelUp()){
+            ArrayList<GameObject> enemies = layers.get(Layer.enemy.ordinal());
+            for(GameObject object : enemies) {
+                remove(object);
+            }
+            return;
+        }
+
         ArrayList<GameObject> enemies = layers.get(Layer.enemy.ordinal());
-        ArrayList<GameObject> bullets = layers.get(Layer.bullet.ordinal());
+        ArrayList<GameObject> items = layers.get(Layer.item.ordinal());
         for (GameObject o1: enemies) {
             Enemy enemy = (Enemy) o1;
             boolean collided = false;
@@ -196,15 +176,27 @@ public class MainGame {
             if (CollisionHelper.collides(enemy, player)) {
                 if(!player.isMoving()) {
                     player.takeDamage(enemy.getDamage());
-                    player.showAttackEffect();
+                    MainGame game = MainGame.get();
+                    game.add(MainGame.Layer.effect, HitEffect.get(R.mipmap.player_hit_effect, enemy.pos, 0.1f));
                 }else{
                     player.onAttack(enemy);
-                    score.addScore((int)(enemy.getDamage()));
+                    player.addExp(enemy.getDamage()*0.1f+1);
+                    enemy.destroy();
+                    score.addScore((int)(enemy.getDamage()*10));
                 }
                 remove(enemy, false);
                 break;
             }
-
+        }
+        if(items != null) {
+            for (GameObject o1 : items) {
+                ColliableItem item = (ColliableItem) o1;
+                if (CollisionHelper.collides(item, player)) {
+                    player.addItem(item);
+                    remove(item, false);
+                    break;
+                }
+            }
         }
     }
 
@@ -239,7 +231,7 @@ public class MainGame {
     }
 
     public void add(Layer layer, GameObject gameObject) {
-        GameView.view.post(new Runnable() {
+        GameView.self.post(new Runnable() {
             @Override
             public void run() {
                 ArrayList<GameObject> objects = layers.get(layer.ordinal());
@@ -267,7 +259,7 @@ public class MainGame {
             }
         };
         if (delayed) {
-            GameView.view.post(runnable);
+            GameView.self.post(runnable);
         } else {
             runnable.run();
         }
@@ -276,14 +268,13 @@ public class MainGame {
     void askItem(){
         Log.d(TAG, "askItem");
         isPlaying = false;
-        isAskingItem = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.self);
         builder.setCancelable(false);
-        builder.setTitle("select item");
+        builder.setTitle(R.string.select_item);
         int chapter = enemyGenerator.getChapter();
-        float difficulty = EnemyGenerator.difficultyMultiplier(chapter);
+        float difficulty = EnemyGenerator.difficultyMultiplier(chapter/6.0f);
         ArrayList<Item> itemLists = new ArrayList<>(Arrays.asList(new statsItem(statsItem.Type.heal, difficulty*1+3),
-                new statsItem(statsItem.Type.addHp, 1),
+                new statsItem(statsItem.Type.addHp, 1 * difficulty),
                 new statsItem(statsItem.Type.addStamina, 1 * difficulty),
                 new statsItem(statsItem.Type.addRadius, 10 * difficulty),
                 new statsItem(statsItem.Type.addRadius, -5 * difficulty),
@@ -315,7 +306,6 @@ public class MainGame {
             player.addItem(items.get(id));
             Log.d(TAG, "askItem: selected item: "+ items.get(id));
             isPlaying = true;
-            isAskingItem = false;
             Toast.makeText(MainActivity.self,
                     items.get(id) + " 선택했습니다.",
                     Toast.LENGTH_SHORT).show();
@@ -334,31 +324,34 @@ public class MainGame {
         String prevName = "";
         SharedPreferences settings = MainActivity.self.getSharedPreferences(SAVE_KEY, 0);
         prevName = settings.getString("prevName", prevName);
-        input.setHint(prevName == null ? "Type Name.." : prevName);
+        input.setHint(prevName == null ? MainActivity.self.getString(R.string.type_name) : prevName);
+
 
         // Get from the SharedPreferences
-        input.setText(prevName == null ? "" : prevName);
+        input.setText(prevName == null ? "P"+new Random().nextInt(50000) : prevName);
 
         builder.setView(input);
-        builder.setTitle("Your score is "+score.getScore());
-        builder.setMessage("Do you want restart game?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                addToLeaderBoard(input.getText().toString(),score.getScore());
-                ArrayList<GameObject> enemies = layers.get(Layer.enemy.ordinal());
-                ArrayList<GameObject> bullets = layers.get(Layer.bullet.ordinal());
-                for(GameObject object : enemies) {
-                    remove(object);
-                }
-                for(GameObject object : bullets) {
-                    remove(object);
-                }
-                reset();
-            }
-        });
+        builder.setTitle(MainActivity.self.getString(R.string.your_score_is)+score.getScore());
+        builder.setMessage(MainActivity.self.getString(R.string.do_you_want_to_restart_game));
+        builder.setPositiveButton(MainActivity.self.getString(R.string.yes), (dialog, which) -> {
+            String name = input.getText().toString();
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("prevName", name);
+            editor.apply();
 
-        builder.setNegativeButton("No", null);
+            leaderboard.addToLeaderBoard(name, score.getScore());
+            ArrayList<GameObject> enemies = layers.get(Layer.enemy.ordinal());
+            ArrayList<GameObject> items = layers.get(Layer.item.ordinal());
+            for (GameObject object : enemies) {
+                remove(object);
+            }
+            for (GameObject object : items) {
+                remove(object);
+            }
+            reset();
+        });
+        builder.setNegativeButton(MainActivity.self.getString(R.string.no), null);
+
         AlertDialog alert = builder.create();
         alert.show();
     }
@@ -366,84 +359,8 @@ public class MainGame {
     void reset(){
         player.reset();
         playerHud.reset();
-        level.setLevel(1);
         score.setScore(0);
         enemyGenerator.reset();
         isPlaying = true;
-    }
-
-    void addToLeaderBoard(String name, int score){
-        SharedPreferences settings = MainActivity.self.getSharedPreferences(SAVE_KEY, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("prevName", name);
-        editor.apply();
-
-        SavedData savedData = new SavedData(name, score);
-        rootRef.child("user").child(name).child("score").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                }
-                else {
-                    Object value = task.getResult().getValue();
-                    if(value != null){
-                        savedData.score = Math.max(((Long)value).intValue(), savedData.score);
-                    }
-                    rootRef.child("user").child(name).setValue(savedData).addOnCompleteListener(task1 -> {
-                        updateLeaderboard();
-                    });
-                    Log.d(TAG, "add score to leaderboard: "+savedData);
-                }
-            }
-        });
-    }
-
-    void updateLeaderboard(){
-        rankBoards.clear();
-
-        Query rank = rootRef.child("user").orderByChild("score").limitToLast(10);
-        ChildEventListener childEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                rankBoards.add(new SavedData(snapshot.getKey(), ((Long)snapshot.child("score").getValue()).intValue()));
-                Log.d(TAG, "onChildAdded: " + snapshot);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-        rank.addChildEventListener(childEventListener);
-    }
-
-    class SavedData{
-        public String id;
-        public int score;
-
-        public SavedData(String id, int score) {
-            this.id = id;
-            this.score = score;
-        }
-
-        public String toString(){
-            return id+","+score;
-        }
     }
 }
