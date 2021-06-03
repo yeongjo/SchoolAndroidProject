@@ -1,6 +1,7 @@
 package kr.ac.kpu.game.s2016180024.Dodge.game.item;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.game.HitEffect;
 import kr.ac.kpu.game.s2016180024.Dodge.game.MainGame;
 import kr.ac.kpu.game.s2016180024.Dodge.game.Player;
@@ -30,6 +31,7 @@ public class ExpItem extends ColliableItem {
     }
 
     public void enterActiveEffect(Player player){
+        Sound.play(R.raw.get_exp_item, 0);
         MainGame game = MainGame.get();
         game.add(MainGame.Layer.effect, HitEffect.get(R.mipmap.enemy_hit_effect, pos, 0.1f));
         player.addExp(exp);

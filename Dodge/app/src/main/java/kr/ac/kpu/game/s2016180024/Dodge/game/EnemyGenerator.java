@@ -71,6 +71,7 @@ public class EnemyGenerator implements GameObject {
             int visualLevel = (wave / nextChapterCount - enemyRandom)%ENEMY_TYPE_COUNT + 1;
             visualLevel = Math.min(Math.max(1, visualLevel), 5);
             Enemy enemy;
+//            level = 4;
             if(level % ENEMY_TYPE_COUNT == 0){
                 enemy = LaserEnemy.get(visualLevel, x, y, (int)(1000 * ((localChapter-1)*0.42f+1)), 10.0f*((localChapter-1)*0.7f+1), 2.0f);
             }else if(level % ENEMY_TYPE_COUNT == 4){

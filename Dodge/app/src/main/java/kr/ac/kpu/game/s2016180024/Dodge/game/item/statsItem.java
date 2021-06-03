@@ -21,7 +21,7 @@ public class statsItem extends Item {
     public void enterActiveEffect(Player player){
         switch(type){
             case heal:
-                player.heal(10);
+                player.heal(6);
                 break;
             case addHp:
                 player.addHp(amount);
@@ -60,19 +60,19 @@ public class statsItem extends Item {
         float multiplier = 1;
         switch(type){
             case addRadius:
-                multiplier = 8;
+                multiplier = 10;
                 break;
             case addSpeed:
-                multiplier = 40;
+                multiplier = 80;
                 break;
         }
-        if(absAmount >= 4*multiplier){
+        if(absAmount >= 0.95*multiplier){
             return MainActivity.self.getString(R.string.a_lot_of);
         }
-        if(absAmount >= 3*multiplier){
+        if(absAmount >= 0.9*multiplier){
             return MainActivity.self.getString(R.string.a_bunch_of);
         }
-        if(absAmount >= 2*multiplier){
+        if(absAmount >= 0.7*multiplier){
             return "";
         }
         return MainActivity.self.getString(R.string.a_little_of);

@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.game.MainGame;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,5 +29,23 @@ public class MainActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         Log.d(TAG, "Density: " + metrics.density + " DPI:" + metrics.densityDpi);
         GameView.MULTIPLIER = metrics.density * PIXEL_MULTIPLIER;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        GameView.self.pauseGame();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GameView.self.pauseGame();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        GameView.self.resumeGame();
     }
 }

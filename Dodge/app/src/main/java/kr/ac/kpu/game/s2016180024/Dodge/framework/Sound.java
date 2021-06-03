@@ -14,7 +14,9 @@ public class Sound {
     private static final String TAG = Sound.class.getSimpleName();
     private static SoundPool soundPool;
     private static final int[] SOUND_IDS = {
-            R.raw.bgm, R.raw.btn_click, R.raw.get_exp_item, R.raw.item_selected
+            R.raw.bgm, R.raw.btn_click,R.raw.enemy_hit, R.raw.get_exp_item, R.raw.item_selected,
+            R.raw.laser_shot,R.raw.player_die,R.raw.player_hit,R.raw.player_move_end,R.raw.player_move_start,
+            R.raw.parent_enemy_pop, R.raw.parent_enemy_charge
     };
     private static HashMap<Integer, Integer> soundIdMap = new HashMap<>();
 
@@ -27,10 +29,10 @@ public class Sound {
                     .build();
             Sound.soundPool = new SoundPool.Builder()
                     .setAudioAttributes(audioAttributes)
-                    .setMaxStreams(3)
+                    .setMaxStreams(10)
                     .build();
         } else {
-            Sound.soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 0);
+            Sound.soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         }
 
         for (int resId: SOUND_IDS) {
@@ -47,9 +49,8 @@ public class Sound {
         int streamId = soundPool.play(soundId, 1f, 1f, 1, isLoop, 1f);
         return streamId;
     }
-    public static void stop(int resId) {
-        Log.d(TAG, "stop: " + resId);
-        int soundId = soundIdMap.get(resId);
-        soundPool.stop(soundId);
+    public static void stop(int streamId) {
+        Log.d(TAG, "stop: " + streamId);
+        soundPool.stop(streamId);
     }
 }

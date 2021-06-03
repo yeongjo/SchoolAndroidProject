@@ -4,6 +4,8 @@ import android.animation.ArgbEvaluator;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
@@ -14,6 +16,7 @@ public class LaserEnemy extends FollowEnemy {
     private float remainTime;
     private float initalRemainTime;
     private float strokeWidth = 14;
+    private boolean isPlayedShotSound;
 
     protected LaserEnemy(){
         super();
@@ -32,6 +35,7 @@ public class LaserEnemy extends FollowEnemy {
         enemy.minAngle = minAngle;
         enemy.initalRemainTime = enemy.remainTime = remainTime;
         enemy.strokeWidth = 5;
+        enemy.isPlayedShotSound = false;
         enemy.paint.setStrokeWidth(enemy.strokeWidth);
         return enemy;
     }
@@ -49,6 +53,10 @@ public class LaserEnemy extends FollowEnemy {
             }
             vel.rotate(deltaAngle * game.frameTime);
             return;
+        }
+        if(!isPlayedShotSound){
+            isPlayedShotSound = true;
+            Sound.play(R.raw.laser_shot, 0);
         }
         pos.add(vel.cpy().mul(speed * game.frameTime));
 

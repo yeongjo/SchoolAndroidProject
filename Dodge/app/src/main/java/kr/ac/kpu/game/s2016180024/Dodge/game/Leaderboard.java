@@ -3,6 +3,9 @@ package kr.ac.kpu.game.s2016180024.Dodge.game;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Build;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -29,7 +32,9 @@ public class Leaderboard implements GameObject {
     private ArrayList<SavedData> rankBoards = new ArrayList<>();
     private Typeface tf;
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private TextPaint textPaint = new TextPaint();
     private Vector2 pos = new Vector2();
+    private StaticLayout staticLayout;
 
     public Leaderboard(float x, float y){
         pos.set(x,y);
@@ -39,6 +44,14 @@ public class Leaderboard implements GameObject {
         paint.setTypeface(tf);
         paint.setColor(0xffffffff);
         paint.setTextAlign(Paint.Align.RIGHT);
+        textPaint.setTextSize(GameView.MULTIPLIER * 8);
+        textPaint.setTypeface(tf);
+        textPaint.setColor(0xffffffff);
+        textPaint.setTextAlign(Paint.Align.RIGHT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            staticLayout = StaticLayout.Builder
+                    .obtain(leaderboardStringBuilder.toString(), 0, leaderboardStringBuilder.length(), textPaint, (int) (GameView.MULTIPLIER * 100)).build();
+        }
     }
 
     public void addToLeaderBoard(String name, int score){
@@ -81,8 +94,12 @@ public class Leaderboard implements GameObject {
                 leaderboardStringBuilder.setLength(0);
                 for (SavedData data : rankBoards) {
                     int rankIndex = i;
-                    leaderboardStringBuilder.append(data.score +" " +data.id +"\n");
+                    leaderboardStringBuilder.insert(0, data.score +" " +data.id +"\n");
                     --i;
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    staticLayout = StaticLayout.Builder
+                            .obtain(leaderboardStringBuilder.toString(), 0, leaderboardStringBuilder.length(), textPaint, (int) (GameView.MULTIPLIER * 100)).build();
                 }
                 Log.d(TAG, "onChildAdded: " + snapshot);
             }
@@ -132,6 +149,10 @@ public class Leaderboard implements GameObject {
     @Override
     public void draw(Canvas canvas) {
         // Leaderboard
-        canvas.drawText(leaderboardStringBuilder.toString(), pos.x, pos.y, paint);
+        canvas.save();
+        canvas.translate(pos.x, pos.y);
+        staticLayout.draw(canvas);
+        canvas.restore();
+//        canvas.drawText(leaderboardStringBuilder.toString(), pos.x, pos.y, paint);
     }
 }

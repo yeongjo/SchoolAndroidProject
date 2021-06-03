@@ -11,6 +11,7 @@ import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollidable;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollider;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.game.item.Item;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
@@ -32,6 +33,7 @@ public class Player implements GameObject, CircleCollidable {
     private Vector2 targetDelta = new Vector2();
     private Vector2 startDragPos = new Vector2();
     private float speed = 300;
+    private float defaultSpeed = 300;
     private boolean isMoving = false;
     private boolean isDragging = false;
     private float dragMultiplier = 1.5f;
@@ -73,6 +75,7 @@ public class Player implements GameObject, CircleCollidable {
         isDragging = false;
         exp = 0;
         level = 1;
+        speed = defaultSpeed;
         isDieNextFrame = isDead = false;
         additiveAttackRadius = 1;
         items.clear();
@@ -185,9 +188,11 @@ public class Player implements GameObject, CircleCollidable {
         if(isDead()){
             return;
         }
+        Sound.play(R.raw.player_hit, 0);
         hp -= damage;
         if(hp <= 0){
             hp = 0;
+            Sound.play(R.raw.player_die, 0);
             isDieNextFrame = true;
         }
         Log.d(TAG, "player takeDamage: "+damage);
@@ -292,7 +297,6 @@ public class Player implements GameObject, CircleCollidable {
 
     public void addExp(float exp){
         this.exp += exp;
-
     }
 
     public float getTotalExp(){

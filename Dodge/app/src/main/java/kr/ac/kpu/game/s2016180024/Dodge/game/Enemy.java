@@ -10,6 +10,7 @@ import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollider;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Recyclable;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
@@ -72,6 +73,7 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
     public void destroy(){
         MainGame game = MainGame.get();
         game.add(MainGame.Layer.effect, HitEffect.get(R.mipmap.enemy_hit_effect, pos, 0.1f));
+        Sound.play(R.raw.enemy_hit, 0);
     }
 
     @Override

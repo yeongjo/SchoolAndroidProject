@@ -7,10 +7,12 @@ import java.util.Random;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 
 // 다른 적들을 만듭니다
 public class ParentEnemy extends Enemy {
     private static Random random = new Random();
+    private static int chargeSound;
     private final Paint paint = new Paint();
     private float remainTime;
 
@@ -33,6 +35,7 @@ public class ParentEnemy extends Enemy {
         int frameCount = 4;
         float secondPerFrame = frameCount / remainTime;
         secondPerFrame -= secondPerFrame * (1.0f/frameCount);
+        chargeSound = Sound.play(R.raw.parent_enemy_charge, 0);
         enemy.bitmap = new AnimationGameBitmap(R.mipmap.enemy_04, secondPerFrame, frameCount);
         return enemy;
     }
@@ -47,13 +50,22 @@ public class ParentEnemy extends Enemy {
                     if(x == 0 && y == 0){
                         continue;
                     }
-                    Enemy enemy = Enemy.get(Math.max(1, level-random.nextInt(4)-1), (int) pos.x + x * 100, (int) pos.y + y * 100, 300+50*(level/5+1));
+                    Enemy enemy = Enemy.get(1, (int) pos.x + x * 100, (int) pos.y + y * 100, 300+50*(level/5+1));
+                    enemy.setDamage(getDamage()/4);
                     game.add(MainGame.Layer.enemy, enemy);
                 }
             }
+            Sound.stop(chargeSound);
+            Sound.play(R.raw.parent_enemy_pop, 0);
             MainGame.get().remove(this);
         }
         super.update();
+    }
+
+    @Override
+    public void recycle() {
+        super.recycle();
+        Sound.stop(chargeSound);
     }
 
     @Override

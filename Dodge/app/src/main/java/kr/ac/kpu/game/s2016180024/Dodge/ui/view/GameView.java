@@ -2,6 +2,7 @@ package kr.ac.kpu.game.s2016180024.Dodge.ui.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Choreographer;
@@ -21,6 +22,7 @@ public class GameView extends View {
     //    private Ball b1, b2;
 
     private long lastFrame;
+    private boolean isRunning = true;
     public static GameView self;
 
     public GameView(Context context, @Nullable AttributeSet attrs) {
@@ -48,7 +50,7 @@ public class GameView extends View {
     }
 
     private void requestCallback() {
-        if (!isShown()) {
+        if (!isRunning) {
             Log.d(TAG, "Not shown. Not calling Choreographer.postFrameCallback()");
             return;
         }
@@ -77,6 +79,28 @@ public class GameView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         MainGame game = MainGame.get();
         return game.onTouchEvent(event);
+    }
+
+
+    public void pauseGame() {
+        isRunning = false;
+        MediaPlayer mediaPlayer = MainGame.get().getMediaPlayer();
+        if(mediaPlayer!=null) {
+            mediaPlayer.stop();
+        }
+    }
+
+    public void resumeGame() {
+        if (!isRunning) {
+            isRunning = true;
+            lastFrame = 0;
+            requestCallback();
+            MediaPlayer mediaPlayer = MainGame.get().getMediaPlayer();
+            if(mediaPlayer!=null) {
+                mediaPlayer.setOnPreparedListener(mp -> mp.start());
+                mediaPlayer.prepareAsync();
+            }
+        }
     }
 }
 

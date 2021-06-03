@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.EditText;
@@ -54,6 +55,7 @@ public class MainGame {
     private boolean isPlaying = true;
     private EnemyGenerator enemyGenerator;
     private Leaderboard leaderboard;
+    private MediaPlayer mediaPlayer;
 
     public enum Layer {
         bg1, bg2, enemy, bullet, item, player, effect, ui, controller, ENEMY_COUNT
@@ -64,6 +66,10 @@ public class MainGame {
             self = new MainGame();
         }
         return self;
+    }
+
+    public MediaPlayer getMediaPlayer(){
+        return mediaPlayer;
     }
 
     public Score getScore(){
@@ -92,6 +98,7 @@ public class MainGame {
 
     public boolean initResources() {
         if (initialized) {
+            mediaPlayer.start();
             return false;
         }
         int w = GameView.self.getWidth();
@@ -99,8 +106,13 @@ public class MainGame {
 
         initLayers(Layer.ENEMY_COUNT.ordinal());
 
+
+        mediaPlayer = MediaPlayer.create(MainActivity.self, R.raw.bgm);
+        mediaPlayer.setLooping(true); // Set looping
+        mediaPlayer.setVolume(50, 50);
+        mediaPlayer.start();
+
 //        Sound.play(R.raw.bgm, 1);
-        Sound.play(R.raw.btn_click, 1);
 
         player = new Player(w/2.0f, h - 300);
         //layers.get(Layer.player.ordinal()).add(player);
@@ -216,6 +228,7 @@ public class MainGame {
                 askRestart();
                 return true;
             }
+            Sound.play(R.raw.player_move_start, 0);
             player.startDrag(event.getX(), event.getY());
             return true;
         }
@@ -224,6 +237,7 @@ public class MainGame {
             return true;
         }
         if (action == MotionEvent.ACTION_UP){
+            Sound.play(R.raw.player_move_end, 0);
             player.endDrag(event.getX(), event.getY());
             return true;
         }
@@ -306,6 +320,8 @@ public class MainGame {
             player.addItem(items.get(id));
             Log.d(TAG, "askItem: selected item: "+ items.get(id));
             isPlaying = true;
+            Sound.play(R.raw.btn_click, 0);
+            Sound.play(R.raw.item_selected, 0);
             Toast.makeText(MainActivity.self,
                     items.get(id) + " 선택했습니다.",
                     Toast.LENGTH_SHORT).show();
@@ -334,6 +350,7 @@ public class MainGame {
         builder.setTitle(MainActivity.self.getString(R.string.your_score_is)+score.getScore());
         builder.setMessage(MainActivity.self.getString(R.string.do_you_want_to_restart_game));
         builder.setPositiveButton(MainActivity.self.getString(R.string.yes), (dialog, which) -> {
+            Sound.play(R.raw.btn_click, 0);
             String name = input.getText().toString();
             SharedPreferences.Editor editor = settings.edit();
             editor.putString("prevName", name);
@@ -350,7 +367,9 @@ public class MainGame {
             }
             reset();
         });
-        builder.setNegativeButton(MainActivity.self.getString(R.string.no), null);
+        builder.setNegativeButton(MainActivity.self.getString(R.string.no), ((dialog, which) -> {
+            Sound.play(R.raw.btn_click, 0);
+        }));
 
         AlertDialog alert = builder.create();
         alert.show();
