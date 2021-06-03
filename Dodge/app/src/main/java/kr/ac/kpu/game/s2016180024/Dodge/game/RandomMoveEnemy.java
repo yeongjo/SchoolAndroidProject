@@ -2,6 +2,9 @@ package kr.ac.kpu.game.s2016180024.Dodge.game;
 
 import java.util.Random;
 
+import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
+
 public class RandomMoveEnemy extends FollowEnemy {
 
     private float randomWaitTime;
@@ -26,6 +29,7 @@ public class RandomMoveEnemy extends FollowEnemy {
         enemy.minAngle = minAngle;
         enemy.minDelay = minDelay;
         enemy.maxDelay = maxDelay;
+        enemy.bitmap = new AnimationGameBitmap(R.mipmap.enemy_03, FRAMES_PER_SECOND, 0);
         return enemy;
     }
 

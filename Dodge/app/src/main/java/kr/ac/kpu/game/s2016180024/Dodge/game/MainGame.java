@@ -1,26 +1,13 @@
 package kr.ac.kpu.game.s2016180024.Dodge.game;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
-import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,7 +133,7 @@ public class MainGame {
         initialized = true;
 
         reset();
-        leaderboard.updateLeaderboard();
+        leaderboard.addUpdateLeaderboardCallback();
         return true;
     }
 
@@ -194,8 +181,8 @@ public class MainGame {
                     player.onAttack(enemy);
                     player.addExp(enemy.getDamage()*0.1f+1);
                     enemy.destroy();
-                    score.addScore((int)(enemy.getDamage()*10));
                 }
+                score.addScore((int)(enemy.getDamage()*10.0f/8.0f));
                 remove(enemy, false);
                 break;
             }
@@ -323,7 +310,7 @@ public class MainGame {
             Sound.play(R.raw.btn_click, 0);
             Sound.play(R.raw.item_selected, 0);
             Toast.makeText(MainActivity.self,
-                    items.get(id) + " 선택했습니다.",
+                    items.get(id) + getString(R.string.selected),
                     Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         });
@@ -340,16 +327,16 @@ public class MainGame {
         String prevName = "";
         SharedPreferences settings = MainActivity.self.getSharedPreferences(SAVE_KEY, 0);
         prevName = settings.getString("prevName", prevName);
-        input.setHint(prevName == null ? MainActivity.self.getString(R.string.type_name) : prevName);
+        input.setHint(prevName == null ? getString(R.string.type_name) : prevName);
 
 
         // Get from the SharedPreferences
-        input.setText(prevName == null ? "P"+new Random().nextInt(50000) : prevName);
+        input.setText(prevName == null ? "" : prevName);
 
         builder.setView(input);
-        builder.setTitle(MainActivity.self.getString(R.string.your_score_is)+score.getScore());
-        builder.setMessage(MainActivity.self.getString(R.string.do_you_want_to_restart_game));
-        builder.setPositiveButton(MainActivity.self.getString(R.string.yes), (dialog, which) -> {
+        builder.setTitle(getString(R.string.your_score_is)+score.getScore());
+        builder.setMessage(getString(R.string.do_you_want_to_restart_game));
+        builder.setPositiveButton(getString(R.string.yes), (dialog, which) -> {
             Sound.play(R.raw.btn_click, 0);
             String name = input.getText().toString();
             SharedPreferences.Editor editor = settings.edit();
@@ -367,12 +354,16 @@ public class MainGame {
             }
             reset();
         });
-        builder.setNegativeButton(MainActivity.self.getString(R.string.no), ((dialog, which) -> {
+        builder.setNegativeButton(getString(R.string.no), ((dialog, which) -> {
             Sound.play(R.raw.btn_click, 0);
         }));
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    String getString(int id){
+        return MainActivity.self.getString(id);
     }
 
     void reset(){

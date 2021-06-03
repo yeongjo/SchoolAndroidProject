@@ -19,4 +19,6 @@
     <string name="increase">increase</string>
     <string name="decrease">decrease</string>
     <string name="attack_range_increase">Attack range increase</string>
+    <string name="selected">" selected"</string>
+    <string name="cant_connected_to_server">Cant connected to server</string>
 </resources>

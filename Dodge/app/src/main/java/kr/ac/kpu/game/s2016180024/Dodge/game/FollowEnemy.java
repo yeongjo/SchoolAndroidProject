@@ -1,5 +1,7 @@
 package kr.ac.kpu.game.s2016180024.Dodge.game;
 
+import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
@@ -22,6 +24,7 @@ public class FollowEnemy extends Enemy {
         enemy.init(level, x, y, speed);
         enemy.vel.y = 1;
         enemy.minAngle = minAngle;
+        enemy.bitmap = new AnimationGameBitmap(R.mipmap.enemy_02, FRAMES_PER_SECOND, 0);
         return enemy;
     }
 

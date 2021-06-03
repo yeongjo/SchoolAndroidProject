@@ -56,6 +56,7 @@ public class EnemyGenerator implements GameObject {
         wave++;
         level = wave / nextChapterCount + 1;
         chapter = level / ENEMY_TYPE_COUNT + 1;
+        spawnInterval = Math.max(INITIAL_SPAWN_INTERVAL-difficultyMultiplier((chapter-1) * 0.17f)*2, 1);
         //Log.d(TAG, "Generate now !!");
         MainGame game = MainGame.get();
         int tenth = GameView.self.getWidth() / 10;
@@ -63,24 +64,24 @@ public class EnemyGenerator implements GameObject {
         for (int i = 1; i <= 9; i += 2) {
             int x = tenth * i + r.nextInt(tenth) - tenth/2;
             int y = 0;
-            int enemyRandom = r.nextInt(4);
+            int enemyRandom = r.nextInt(6);
             int level = Math.min(wave / nextChapterCount, 20) - enemyRandom + 1;
             level = Math.max(1, Math.min(level,20));
             int localChapter = level / ENEMY_TYPE_COUNT + 1;
             float difficulty = difficultyMultiplier(localChapter);
-            int visualLevel = (wave / nextChapterCount - enemyRandom)%ENEMY_TYPE_COUNT + 1;
+            int visualLevel = Math.min(wave / nextChapterCount - enemyRandom, 5)%ENEMY_TYPE_COUNT + 1;
             visualLevel = Math.min(Math.max(1, visualLevel), 5);
             Enemy enemy;
 //            level = 0;
             if(level % ENEMY_TYPE_COUNT == 0){
-                enemy = LaserEnemy.get(visualLevel, x, y, (int)(1000 * ((localChapter-1)*0.42f+1)), 10.0f*((localChapter-1)*0.7f+1), 2.0f);
+                enemy = LaserEnemy.get(visualLevel, x, y, (int)(1000 * ((localChapter-1)*0.42f+1)), 10.0f*((localChapter-1)*1.7f+1), 2.0f);
             }else if(level % ENEMY_TYPE_COUNT == 4){
                 int speed = (int) (200 * ((localChapter - 1) * 0.5f + 1));
                 enemy = ParentEnemy.get(visualLevel, x, y,speed , 880.0f / speed);
             }else if(level % ENEMY_TYPE_COUNT == 3){
-                enemy = RandomMoveEnemy.get(visualLevel, x, y, (int)(450 * ((localChapter-1)*0.5f+1)), 3.0f * localChapter, 0.1f, 1.5f);
+                enemy = RandomMoveEnemy.get(visualLevel, x, y, (int)(450 * ((localChapter-1)*0.5f+1)), 3.0f + ((localChapter-1)*2.7f), 0.1f, 1.5f);
             }else if(level % ENEMY_TYPE_COUNT == 2) {
-                enemy = FollowEnemy.get(visualLevel, x, y, (int)(300 * ((localChapter-1)*0.5f+1)), 3.0f * localChapter);
+                enemy = FollowEnemy.get(visualLevel, x, y, (int)(300 * ((localChapter-1)*0.5f+1)), 3.0f + ((localChapter-1)*2.7f));
             }else {
                 enemy = Enemy.get(visualLevel, x, y, (int)(300 * ((localChapter-1)*0.4f+1)));
             }
@@ -105,6 +106,7 @@ public class EnemyGenerator implements GameObject {
 
     public void reset() {
         wave = 0;
+//        wave = 200;
         time = INITIAL_SPAWN_INTERVAL;
         spawnInterval = INITIAL_SPAWN_INTERVAL;
         chapter = level = nextTargetLevel = 1;

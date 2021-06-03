@@ -41,7 +41,7 @@ public class PlayerHud  implements GameObject {
     @Override
     public void update() {
         player = MainGame.get().getPlayer();
-        sizeMultiplier = GameView.self.getWidth() / 25.0f;
+        sizeMultiplier = GameView.self.getWidth() / 25.0f * 2;
         float frameTime = MainGame.get().frameTime;
         if(player != null) {
             staminaRectRight = rectLeft + (player.getStamina() * sizeMultiplier);
@@ -73,7 +73,8 @@ public class PlayerHud  implements GameObject {
         dst.right = prevExpRectRight;
         canvas.drawRect(dst, paint);
 
-        moveRectToNextLine();
+        moveRectToNextLine(0);
+        dst.bottom += 15;
         paint.setColor(0xff000000);
         dst.right = totalHpRectRight;
         canvas.drawRect(dst, paint);
@@ -84,7 +85,7 @@ public class PlayerHud  implements GameObject {
         dst.right = hpRectRight;
         canvas.drawRect(dst, paint);
 
-        moveRectToNextLine();
+        moveRectToNextLine(0);
         paint.setColor(0xff000000);
         dst.right = totalStaminaRectRight;
         canvas.drawRect(dst, paint);
@@ -106,8 +107,13 @@ public class PlayerHud  implements GameObject {
     }
 
     void moveRectToNextLine(){
-        dst.top += BAR_HEIGHT+BAR_NEXT_LINE_OFFSET;
-        dst.bottom += BAR_HEIGHT+BAR_NEXT_LINE_OFFSET;
+        moveRectToNextLine(0);
+    }
+
+    void moveRectToNextLine(float sizeOffset){
+        float barHeight = dst.bottom - dst.top;
+        dst.top += barHeight+BAR_NEXT_LINE_OFFSET + sizeOffset;
+        dst.bottom += barHeight+BAR_NEXT_LINE_OFFSET + sizeOffset;
     }
 
     void resetRectPos(){

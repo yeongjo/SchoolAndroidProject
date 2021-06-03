@@ -300,7 +300,7 @@ public class Player implements GameObject, CircleCollidable {
     }
 
     public float getTotalExp(){
-        return level+level*10;
+        return level+level*6;
     }
 
     public boolean checkExpToLevelUp(){

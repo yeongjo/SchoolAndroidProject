@@ -35,5 +35,6 @@ public class ExpItem extends ColliableItem {
         MainGame game = MainGame.get();
         game.add(MainGame.Layer.effect, HitEffect.get(R.mipmap.enemy_hit_effect, pos, 0.1f));
         player.addExp(exp);
+        game.getScore().addScore(5);
     }
 }

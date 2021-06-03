@@ -20,4 +20,6 @@
     <string name="speed_a_little_of_decrease_stamina">속도 조금 감소, 스테미나</string>
     <string name="heal">회복</string>
     <string name="increase">증가</string>
+    <string name="selected">" 선택됐습니다."</string>
+    <string name="cant_connected_to_server">서버에 연결할 수 없었습니다.</string>
 </resources>

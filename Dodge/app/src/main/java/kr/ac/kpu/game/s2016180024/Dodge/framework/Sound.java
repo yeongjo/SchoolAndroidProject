@@ -20,6 +20,8 @@ public class Sound {
     };
     private static HashMap<Integer, Integer> soundIdMap = new HashMap<>();
 
+    private static int maxStreams = 10;
+
     public static void init(Context context) {
         AudioAttributes audioAttributes;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -29,10 +31,10 @@ public class Sound {
                     .build();
             Sound.soundPool = new SoundPool.Builder()
                     .setAudioAttributes(audioAttributes)
-                    .setMaxStreams(10)
+                    .setMaxStreams(maxStreams)
                     .build();
         } else {
-            Sound.soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+            Sound.soundPool = new SoundPool(maxStreams, AudioManager.STREAM_MUSIC, 0);
         }
 
         for (int resId: SOUND_IDS) {

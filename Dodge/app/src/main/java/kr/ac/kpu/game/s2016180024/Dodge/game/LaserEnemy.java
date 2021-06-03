@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
@@ -40,6 +41,7 @@ public class LaserEnemy extends FollowEnemy {
         enemy.strokeWidth = 5;
         enemy.isPlayedShotSound = false;
         enemy.paint.setStrokeWidth(enemy.strokeWidth);
+        enemy.bitmap = new AnimationGameBitmap(R.mipmap.enemy_05, FRAMES_PER_SECOND, 0);
         return enemy;
     }
 
