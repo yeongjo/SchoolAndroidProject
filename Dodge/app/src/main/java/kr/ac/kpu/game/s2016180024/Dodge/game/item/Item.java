@@ -8,7 +8,7 @@ public class Item {
 
     }
 
-    public void updateActivateEffect(Player player){
+    public void onUpdateActivationEffect(Player player){
 
     }
 

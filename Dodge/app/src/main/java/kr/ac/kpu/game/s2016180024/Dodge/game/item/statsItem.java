@@ -43,7 +43,7 @@ public class statsItem extends Item {
     }
 
     @Override
-    public void updateActivateEffect(Player player){
+    public void onUpdateActivationEffect(Player player){
 
     }
 

@@ -22,27 +22,29 @@ public class Player implements GameObject, CircleCollidable {
     private static final String TAG = Player.class.getSimpleName();
     private static final int BULLET_SPEED = 1500;
     private static final float FIRE_INTERVAL = 1.0f / 7.5f;
-    private static final float LASER_DURATION = FIRE_INTERVAL / 3;
+    private static final float Hit_EFFECT_DURATION = FIRE_INTERVAL / 3;
     private static final float INIT_HP = 3;
     private static final float INIT_STAMINA = 2;
     private static final float INIT_RADIUS = 20;
-    private float fireTime = 0.0f;
+    private static final float DEFAULT_SPEED = 450;
+
+    private GameBitmap playerBitmap;
+    private GameBitmap hitEffectBitmap;
+    private float hitEffectDuration = 0.0f;
     private Vector2 pos = new Vector2();
     private Vector2 initPos = new Vector2();
     private Vector2 draggingTargetDelta = new Vector2();
     private Vector2 targetDelta = new Vector2();
     private Vector2 startDragPos = new Vector2();
     private float speed = 300;
-    private float defaultSpeed = 300;
     private boolean isMoving = false;
     private boolean isDragging = false;
-    private float dragMultiplier = 1.5f;
-    private GameBitmap playerBitmap;
-    private GameBitmap fireBitmap;
+    private float dragMultiplier = 1.5f;// 드래그할때 드래그 된 위치보다 얼마나 더 이동할지의 비율
     private Vector2 normalizedTargetDelta = new Vector2();
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private float radius = INIT_RADIUS * GameView.MULTIPLIER;
     private float additiveAttackRadius = 1;
+    private float radiusMultiplier;
     private float totalStamina = INIT_STAMINA;
     private float stamina = INIT_STAMINA;
     private float totalHp = INIT_HP;
@@ -59,9 +61,10 @@ public class Player implements GameObject, CircleCollidable {
     public Player(float x, float y) {
         initPos.set(pos.set(x,y));
         this.playerBitmap = new GameBitmap(R.mipmap.player);
-        this.fireBitmap = new GameBitmap(R.mipmap.player_hit_effect);
+        this.hitEffectBitmap = new GameBitmap(R.mipmap.player_hit_effect);
         paint.setStrokeWidth(2);
         paint.setStyle(Paint.Style.STROKE);
+        reset();
     }
 
     public void reset(){
@@ -75,25 +78,82 @@ public class Player implements GameObject, CircleCollidable {
         isDragging = false;
         exp = 0;
         level = 1;
-        speed = defaultSpeed;
+        speed = DEFAULT_SPEED;
         isDieNextFrame = isDead = false;
         additiveAttackRadius = 1;
+        radiusMultiplier = 1;
         items.clear();
     }
 
-    public float getStamina(){
-        return stamina;
+    public void update() {
+        if(isDieNextFrame && !isDead){ // 아직 살아있고 다음 프레임에 죽는다면
+            die();
+        }
+        if(isDead()){
+            return;
+        }
+        MainGame game = MainGame.get();
+
+        for (Item item : items){
+            item.onUpdateActivationEffect(this);
+        }
+
+        if(isMoving && stamina > 0) { // 스테미나가 있고 움직이는중
+            normalizedTargetDelta.set(targetDelta);
+            Vector2 delta = normalizedTargetDelta.normalize().mul(speed * game.frameTime);
+            targetDelta.sub(delta);
+            stamina -= game.frameTime;
+            radiusMultiplier += game.frameTime*0.5f;
+            pos.add(delta);
+            if ((((delta.x > 0 && 0 > targetDelta.x) || (delta.x < 0 && 0 < targetDelta.x)) ||
+                    ((delta.y > 0 && 0 > targetDelta.y) || (delta.y < 0 && 0 < targetDelta.y))) ||
+                    (targetDelta.x == 0 && targetDelta.y == 0)) {
+                // Log.d(TAG, "update: targetDelta:"+targetDelta+" delta:"+delta);
+                pos.add(targetDelta);
+                isMoving = false;
+                for (Item item : items){
+                    item.stopMove(this);
+                }
+            }
+        }else{
+            radiusMultiplier = 1;
+            stamina += game.frameTime * staminaRegenSpeed;
+            isMoving = false;
+            if(stamina > totalStamina){
+                stamina = totalStamina;
+            }
+            for (Item item : items){
+                item.stopMove(this);
+            }
+        }
+
+        hitEffectDuration += game.frameTime;
     }
 
-    public float getTotalStamina(){
-        return totalStamina;
-    }
+    public void draw(Canvas canvas) {
+        playerBitmap.setScale(radius * 0.0111f);
+        playerBitmap.draw(canvas, pos.x, pos.y);
+        float radius = this.radius * additiveAttackRadius * radiusMultiplier * RECIPROCAL_PIXEL_MULTIPLIER;
+        if(isDragging){
+            paint.setColor(0xff48ffaa);   //color.Green
+            targetRightVector.set(draggingTargetDelta.x, draggingTargetDelta.y).normalize().rotate(90).mul(radius);
+            canvas.drawLine(pos.x+targetRightVector.x, pos.y+targetRightVector.y, pos.x + draggingTargetDelta.x+targetRightVector.x, pos.y + draggingTargetDelta.y+targetRightVector.y, paint);
+            canvas.drawLine(pos.x-targetRightVector.x, pos.y-targetRightVector.y, pos.x + draggingTargetDelta.x-targetRightVector.x, pos.y + draggingTargetDelta.y-targetRightVector.y, paint);
+            canvas.drawCircle(pos.x + draggingTargetDelta.x, pos.y + draggingTargetDelta.y, radius, paint);
+            canvas.drawCircle(pos.x, pos.y, radius, paint);
+        }
+        if(isMoving){
+            paint.setColor(0xffffcf48);   //color.yellow
+            targetRightVector.set(targetDelta.x, targetDelta.y).normalize().rotate(90).mul(radius);
+            canvas.drawLine(pos.x+targetRightVector.x, pos.y+targetRightVector.y, pos.x + targetDelta.x+targetRightVector.x, pos.y + targetDelta.y+targetRightVector.y, paint);
+            canvas.drawLine(pos.x-targetRightVector.x, pos.y-targetRightVector.y, pos.x + targetDelta.x-targetRightVector.x, pos.y + targetDelta.y-targetRightVector.y, paint);
+            canvas.drawCircle(pos.x + targetDelta.x, pos.y + targetDelta.y, radius, paint);
+            canvas.drawCircle(pos.x, pos.y, radius, paint);
+        }
 
-    public Vector2 getPos(){return pos;}
-
-    public void addItem(Item item){
-        item.enterActiveEffect(this);
-        items.add(item);
+        if (hitEffectDuration < Hit_EFFECT_DURATION) {
+            hitEffectBitmap.draw(canvas, pos.x, pos.y);
+        }
     }
 
     public void startDrag(float x, float y) {
@@ -131,57 +191,11 @@ public class Player implements GameObject, CircleCollidable {
         isDragging = false;
     }
 
+    // 공격하는 타이밍에 공격한 적을 기반으로 아이템 효과 발동
     public void onAttack(Enemy enemy){
         for (Item item : items){
             item.onAttack(this, enemy);
         }
-    }
-
-    public void update() {
-        if(isDieNextFrame && !isDead){
-            die();
-        }
-        if(isDead()){
-            return;
-        }
-        MainGame game = MainGame.get();
-
-        for (Item item : items){
-            item.updateActivateEffect(this);
-        }
-
-        if(isMoving && stamina > 0) {
-            normalizedTargetDelta.set(targetDelta);
-            Vector2 delta = normalizedTargetDelta.normalize().mul(speed * game.frameTime);
-            targetDelta.sub(delta);
-            stamina -= game.frameTime;
-            pos.add(delta);
-            if ((((delta.x > 0 && 0 > targetDelta.x) || (delta.x < 0 && 0 < targetDelta.x)) ||
-                    ((delta.y > 0 && 0 > targetDelta.y) || (delta.y < 0 && 0 < targetDelta.y))) ||
-                    (targetDelta.x == 0 && targetDelta.y == 0)) {
-                pos.add(targetDelta);
-                Log.d(TAG, "update: targetDelta:"+targetDelta+" delta:"+delta);
-                isMoving = false;
-                for (Item item : items){
-                    item.stopMove(this);
-                }
-            }
-        }else{
-            stamina += game.frameTime * staminaRegenSpeed;
-            isMoving = false;
-            for (Item item : items){
-                item.stopMove(this);
-            }
-            if(stamina > totalStamina){
-                stamina = totalStamina;
-            }
-        }
-
-        fireTime += game.frameTime;
-//        if (fireTime >= FIRE_INTERVAL) {
-//            fireBullet();
-//            fireTime -= FIRE_INTERVAL;
-//        }
     }
 
     public void takeDamage(float damage){
@@ -189,6 +203,7 @@ public class Player implements GameObject, CircleCollidable {
             return;
         }
         Sound.play(R.raw.player_hit, 0);
+        hitEffectDuration = 0;
         hp -= damage;
         if(hp <= 0){
             hp = 0;
@@ -198,109 +213,45 @@ public class Player implements GameObject, CircleCollidable {
         Log.d(TAG, "player takeDamage: "+damage);
     }
 
-
-    public boolean isDead(){
-        return isDead;
+    public void addItem(Item item){
+        item.enterActiveEffect(this);
+        items.add(item);
     }
 
-    public void draw(Canvas canvas) {
-        playerBitmap.setScale(radius * 0.0111f);
-        playerBitmap.draw(canvas, pos.x, pos.y);
-        float radius = this.radius * additiveAttackRadius * RECIPROCAL_PIXEL_MULTIPLIER;
-        if(isDragging){
-            paint.setColor(0xff48ffaa);   //color.Green
-            targetRightVector.set(draggingTargetDelta.x, draggingTargetDelta.y).normalize().rotate(90).mul(radius);
-            canvas.drawLine(pos.x+targetRightVector.x, pos.y+targetRightVector.y, pos.x + draggingTargetDelta.x+targetRightVector.x, pos.y + draggingTargetDelta.y+targetRightVector.y, paint);
-            canvas.drawLine(pos.x-targetRightVector.x, pos.y-targetRightVector.y, pos.x + draggingTargetDelta.x-targetRightVector.x, pos.y + draggingTargetDelta.y-targetRightVector.y, paint);
-            canvas.drawCircle(pos.x + draggingTargetDelta.x, pos.y + draggingTargetDelta.y, radius, paint);
-            canvas.drawCircle(pos.x, pos.y, radius, paint);
-        }
-        if(isMoving){
-            paint.setColor(0xffffcf48);   //color.yellow
-            targetRightVector.set(targetDelta.x, targetDelta.y).normalize().rotate(90).mul(radius);
-            canvas.drawLine(pos.x+targetRightVector.x, pos.y+targetRightVector.y, pos.x + targetDelta.x+targetRightVector.x, pos.y + targetDelta.y+targetRightVector.y, paint);
-            canvas.drawLine(pos.x-targetRightVector.x, pos.y-targetRightVector.y, pos.x + targetDelta.x-targetRightVector.x, pos.y + targetDelta.y-targetRightVector.y, paint);
-            canvas.drawCircle(pos.x + targetDelta.x, pos.y + targetDelta.y, radius, paint);
-            canvas.drawCircle(pos.x, pos.y, radius, paint);
-        }
-
-        if (fireTime < LASER_DURATION) {
-            fireBitmap.draw(canvas, pos.x, pos.y);
-        }
-    }
-
-    public boolean isMoving() {
-        return isMoving;
-    }
-
-    public float getTotalHp() {
-        return totalHp;
-    }
-
-    public float getHp(){
-        return hp;
-    }
     public void heal(float amount){
         hp += amount;
         hp = Math.min(hp, totalHp);
     }
+
     public void addHp(float amount){
         hp += amount;
         totalHp += amount;
     }
+
     public void addStamina(float amount){
         stamina += amount;
         totalStamina += amount;
     }
+
     public void addRadius(float amount){
         radius += amount;
         radius = Math.max(10, radius);
     }
-    public float getRadius(){
-        return radius;
-    }
+
     public void addAdditiveRadius(float amount){
         additiveAttackRadius += amount;
     }
+
     public void resetAdditiveRadius(){
         additiveAttackRadius = 1;
-    }
-    public float getAdditiveRadius(){
-        return additiveAttackRadius;
-    }
-
-    @Override
-    public CircleCollider getCollider() {
-        circleCollider.pos.set(pos);
-        circleCollider.radius = radius * additiveAttackRadius  * RECIPROCAL_PIXEL_MULTIPLIER;
-        return circleCollider;
-    }
-
-    private void die() {
-        isDead = true;
-        Log.d(TAG, "player dead");
-    }
-
-    private void fireBullet() {
-        Bullet bullet = Bullet.get(pos.x, pos.y, BULLET_SPEED);
-        MainGame game = MainGame.get();
-        game.add(MainGame.Layer.bullet, bullet);
     }
 
     public void addSpeed(float amount) {
         speed += amount;
     }
 
-    public float getExp() {
-        return exp;
-    }
-
     public void addExp(float exp){
         this.exp += exp;
-    }
-
-    public float getTotalExp(){
-        return level+level*6;
     }
 
     public boolean checkExpToLevelUp(){
@@ -312,5 +263,46 @@ public class Player implements GameObject, CircleCollidable {
             return true;
         }
         return false;
+    }
+
+    private void die() {
+        isDead = true;
+        Log.d(TAG, "player dead");
+    }
+
+    public boolean isDead(){ return isDead; }
+    public boolean isMoving() {
+        return isMoving;
+    }
+    public float getTotalHp() {
+        return totalHp;
+    }
+    public float getHp(){
+        return hp;
+    }
+    public float getStamina(){
+        return stamina;
+    }
+    public float getTotalStamina(){
+        return totalStamina;
+    }
+    public float getRadius(){
+        return radius;
+    }
+    public Vector2 getPos(){return pos;}
+    public float getAdditiveRadius(){
+        return additiveAttackRadius;
+    }
+    public float getExp() {
+        return exp;
+    }
+    public float getTotalExp(){
+        return level+level*6;
+    }
+    @Override
+    public CircleCollider getCollider() {
+        circleCollider.pos.set(pos);
+        circleCollider.radius = radius * additiveAttackRadius * radiusMultiplier * RECIPROCAL_PIXEL_MULTIPLIER;
+        return circleCollider;
     }
 }

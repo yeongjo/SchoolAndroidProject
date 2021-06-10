@@ -11,7 +11,7 @@ import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
 public class EnemyGenerator implements GameObject {
 
-    private static final float INITIAL_SPAWN_INTERVAL = 4.0f;
+    private static final float INITIAL_SPAWN_INTERVAL = 5.0f;
     private static final String TAG = EnemyGenerator.class.getSimpleName();
     private static final int ENEMY_TYPE_COUNT = 5;
     private float time;
@@ -20,13 +20,14 @@ public class EnemyGenerator implements GameObject {
     private int nextTargetLevel;
     private int level;
     private int chapter = 1;
-    private int nextChapterCount= 3;
+    private int nextChapterCount = 3;
     public static EnemyGenerator self;
 
     public EnemyGenerator() {
         self = this;
         reset();
     }
+
     @Override
     public void update() {
         MainGame game = MainGame.get();
@@ -56,7 +57,7 @@ public class EnemyGenerator implements GameObject {
         wave++;
         level = wave / nextChapterCount + 1;
         chapter = level / ENEMY_TYPE_COUNT + 1;
-        spawnInterval = Math.max(INITIAL_SPAWN_INTERVAL-difficultyMultiplier((chapter-1) * 0.17f)*2, 1);
+        updateSpawnInterval();
         //Log.d(TAG, "Generate now !!");
         MainGame game = MainGame.get();
         int tenth = GameView.self.getWidth() / 10;
@@ -90,6 +91,10 @@ public class EnemyGenerator implements GameObject {
         }
         ExpItem item = ExpItem.get(100 + r.nextInt(GameView.self.getWidth() - 100), chapter*0.5f+1);
         game.add(MainGame.Layer.item, item);
+    }
+
+    private void updateSpawnInterval() {
+        spawnInterval = Math.max(INITIAL_SPAWN_INTERVAL-difficultyMultiplier((chapter-1) * 0.17f)*2, 1);
     }
 
     // difficultyMultiplier(0) == 0
