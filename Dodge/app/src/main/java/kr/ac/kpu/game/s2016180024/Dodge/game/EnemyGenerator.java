@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Scene;
 import kr.ac.kpu.game.s2016180024.Dodge.game.item.ExpItem;
+import kr.ac.kpu.game.s2016180024.Dodge.game.scene.GamePlayScene;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
 public class EnemyGenerator implements GameObject {
@@ -36,7 +38,7 @@ public class EnemyGenerator implements GameObject {
         if(nextTargetLevel == level){
             nextTargetLevel += 1;
 //                Level.self.setLevel(level);
-            MainGame.get().getScore().addScore(level*10);
+            GamePlayScene.get().getScore().addScore(level*10);
             return;
         }
         time += game.frameTime;
@@ -51,7 +53,7 @@ public class EnemyGenerator implements GameObject {
     }
 
     boolean checkEveryEnemyDestroyed(){
-        ArrayList<GameObject> enemies = MainGame.get().layers.get(MainGame.Layer.enemy.ordinal());
+        ArrayList<GameObject> enemies = GamePlayScene.get().layers.get(Scene.Layer.enemy.ordinal());
         return enemies.isEmpty();
     }
 
@@ -87,10 +89,10 @@ public class EnemyGenerator implements GameObject {
                 enemy = Enemy.get(visualLevel, x, y, (int)(300 * ((localChapter-1)*0.4f+1)));
             }
             enemy.setDamage(0.5f+localChapter*0.2f);
-            game.add(MainGame.Layer.enemy, enemy);
+            Scene.getActiveScene().add(Scene.Layer.enemy, enemy);
         }
         ExpItem item = ExpItem.get(100 + random.nextInt(GameView.self.getWidth() - 100), chapter*0.5f+1);
-        game.add(MainGame.Layer.item, item);
+        Scene.getActiveScene().add(Scene.Layer.item, item);
     }
 
     private void updateSpawnInterval() {

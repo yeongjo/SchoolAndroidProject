@@ -35,22 +35,43 @@ public class Leaderboard implements GameObject {
     private DatabaseReference rootRef;
     private ArrayList<SavedData> rankBoards = new ArrayList<>();
     private Typeface tf;
-    private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private TextPaint textPaint = new TextPaint();
     private Vector2 pos = new Vector2();
     private StaticLayout staticLayout;
+    private boolean isVisible = true;
+    private static Leaderboard self;
 
-    public Leaderboard(float x, float y){
-        pos.set(x,y);
+    public static Leaderboard create(float x, float y, Paint.Align align){
+        if(self == null){
+            new Leaderboard(x, y, align);
+        }
+        self.setPos(new Vector2(x,y));
+        self.setAlign(align);
+        self.isVisible = true;
+        return self;
+    }
+
+    public static Leaderboard get(){
+        if(self == null){
+            return null;
+        }
+        return self;
+    }
+
+    public void setAlign(Paint.Align align){
+        textPaint.setTextAlign(align);
+    }
+
+    public void setPos(Vector2 pos){
+        this.pos.set(pos);
+    }
+
+    protected Leaderboard(float x, float y, Paint.Align align){
+        self = this;
         tf = Typeface.createFromAsset(GameView.self.getResources().getAssets(), "pfstardust.ttf");
-        paint.setTextSize(GameView.MULTIPLIER * 10);
-        paint.setTypeface(tf);
-        paint.setColor(0xffffffff);
-        paint.setTextAlign(Paint.Align.RIGHT);
         textPaint.setTextSize(GameView.MULTIPLIER * 8);
         textPaint.setTypeface(tf);
         textPaint.setColor(0xffffffff);
-        textPaint.setTextAlign(Paint.Align.RIGHT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             staticLayout = StaticLayout.Builder
                     .obtain(leaderboardStringBuilder.toString(), 0, leaderboardStringBuilder.length(), textPaint, (int) (GameView.MULTIPLIER * 100)).build();
@@ -77,6 +98,10 @@ public class Leaderboard implements GameObject {
 
     public boolean isConnected(){
         return rootRef != null;
+    }
+
+    public void setVisible(boolean visible){
+        isVisible = visible;
     }
 
     public void addToLeaderBoard(String name, int score){
@@ -203,7 +228,7 @@ public class Leaderboard implements GameObject {
 
     @Override
     public void draw(Canvas canvas) {
-        if(!isConnected()){
+        if(!isVisible || !isConnected()){
             return;
         }
         // Leaderboard
@@ -211,6 +236,5 @@ public class Leaderboard implements GameObject {
         canvas.translate(pos.x, pos.y);
         staticLayout.draw(canvas);
         canvas.restore();
-//        canvas.drawText(leaderboardStringBuilder.toString(), pos.x, pos.y, paint);
     }
 }

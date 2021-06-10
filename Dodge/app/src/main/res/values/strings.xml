@@ -21,4 +21,7 @@
     <string name="attack_range_increase">Attack range increase</string>
     <string name="selected">" selected"</string>
     <string name="cant_connected_to_server">Cant connected to server</string>
+    <string name="press_any_key">Press any key</string>
+    <string name="game_name">Dodge</string>
+    <string name="game_description">Kill enemy with drag</string>
 </resources>

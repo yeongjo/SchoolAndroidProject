@@ -2,7 +2,9 @@ package kr.ac.kpu.game.s2016180024.Dodge.game;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Scene;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
+import kr.ac.kpu.game.s2016180024.Dodge.game.scene.GamePlayScene;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
 public class FollowEnemy extends Enemy {
@@ -16,7 +18,7 @@ public class FollowEnemy extends Enemy {
 
     public static FollowEnemy get(int level, int x, int y, int speed, float minAngle) {
         MainGame game = MainGame.get();
-        FollowEnemy enemy = (FollowEnemy) game.get(FollowEnemy.class);
+        FollowEnemy enemy = (FollowEnemy) Scene.getActiveScene().get(FollowEnemy.class);
         if (enemy == null) {
             enemy = new FollowEnemy();
         }
@@ -31,7 +33,7 @@ public class FollowEnemy extends Enemy {
     @Override
     public void update() {
         MainGame game = MainGame.get();
-        Player player = game.getPlayer();
+        Player player = GamePlayScene.get().getPlayer();
         float velocityAngle = vel.angle();
         float deltaAngle = player.getPos().cpy().sub(pos).angle() - velocityAngle;
         if(Math.abs(deltaAngle) > minAngle){
@@ -41,7 +43,7 @@ public class FollowEnemy extends Enemy {
         pos.add(vel.cpy().mul(speed * game.frameTime));
 
         if (pos.y > GameView.self.getHeight()) {
-            game.remove(this);
+            Scene.getActiveScene().remove(this);
         }
     }
 }

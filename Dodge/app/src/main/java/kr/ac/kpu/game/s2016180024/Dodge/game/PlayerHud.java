@@ -5,6 +5,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
+import kr.ac.kpu.game.s2016180024.Dodge.game.scene.GamePlayScene;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
 public class PlayerHud  implements GameObject {
@@ -40,7 +41,7 @@ public class PlayerHud  implements GameObject {
 
     @Override
     public void update() {
-        player = MainGame.get().getPlayer();
+        player = GamePlayScene.get().getPlayer();
         sizeMultiplier = GameView.self.getWidth() / 25.0f * 2;
         float frameTime = MainGame.get().frameTime;
         if(player != null) {
@@ -97,7 +98,7 @@ public class PlayerHud  implements GameObject {
     }
 
     public void reset(){
-        player = MainGame.get().getPlayer();
+        player = GamePlayScene.get().getPlayer();
         if(player != null) {
             sizeMultiplier = GameView.self.getWidth() / (GameView.MULTIPLIER * 25);
             totalHpRectRight = rectLeft + (player.getTotalHp() * GameView.MULTIPLIER * sizeMultiplier);

@@ -4,6 +4,7 @@ import java.util.Random;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Scene;
 
 public class RandomMoveEnemy extends FollowEnemy {
 
@@ -18,8 +19,7 @@ public class RandomMoveEnemy extends FollowEnemy {
     }
 
     public static RandomMoveEnemy get(int level, int x, int y, int speed, float minAngle, float minDelay, float maxDelay) {
-        MainGame game = MainGame.get();
-        RandomMoveEnemy enemy = (RandomMoveEnemy) game.get(RandomMoveEnemy.class);
+        RandomMoveEnemy enemy = (RandomMoveEnemy) Scene.getActiveScene().get(RandomMoveEnemy.class);
         if (enemy == null) {
             enemy = new RandomMoveEnemy();
         }

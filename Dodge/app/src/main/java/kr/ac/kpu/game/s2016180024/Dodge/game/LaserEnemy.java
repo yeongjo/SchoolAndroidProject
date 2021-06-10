@@ -6,8 +6,10 @@ import android.graphics.Paint;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Scene;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
+import kr.ac.kpu.game.s2016180024.Dodge.game.scene.GamePlayScene;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
 public class LaserEnemy extends FollowEnemy {
@@ -27,8 +29,7 @@ public class LaserEnemy extends FollowEnemy {
     }
 
     public static LaserEnemy get(int level, int x, int y, int speed, float minAngle, float remainTime) {
-        MainGame game = MainGame.get();
-        LaserEnemy enemy = (LaserEnemy) game.get(LaserEnemy.class);
+        LaserEnemy enemy = (LaserEnemy) Scene.getActiveScene().get(LaserEnemy.class);
         if (enemy == null) {
             enemy = new LaserEnemy();
         }
@@ -55,7 +56,7 @@ public class LaserEnemy extends FollowEnemy {
         }
         remainTime -= game.frameTime;
         if(remainTime > 0) {
-            Player player = game.getPlayer();
+            Player player = GamePlayScene.get().getPlayer();
             float velocityAngle = vel.angle();
             float deltaAngle = player.getPos().cpy().sub(pos).angle() - velocityAngle;
             if (Math.abs(deltaAngle) > minAngle) {
@@ -71,7 +72,7 @@ public class LaserEnemy extends FollowEnemy {
         pos.add(vel.cpy().mul(speed * game.frameTime));
 
         if (pos.y > GameView.self.getHeight()) {
-            game.remove(this);
+            Scene.getActiveScene().remove(this);
         }
     }
 

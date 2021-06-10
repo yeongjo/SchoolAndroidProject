@@ -10,6 +10,7 @@ import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollider;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Recyclable;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Scene;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
@@ -40,8 +41,7 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
     }
 
     public static Enemy get(int level, int x, int y, int speed) {
-        MainGame game = MainGame.get();
-        Enemy enemy = (Enemy) game.get(Enemy.class);
+        Enemy enemy = (Enemy) Scene.getActiveScene().get(Enemy.class);
         if (enemy == null) {
             enemy = new Enemy();
         }
@@ -62,7 +62,7 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
 
     public void destroy(){
         MainGame game = MainGame.get();
-        game.add(MainGame.Layer.effect, HitEffect.get(R.mipmap.enemy_hit_effect, pos, 0.1f));
+        Scene.getActiveScene().add(Scene.Layer.effect, HitEffect.get(R.mipmap.enemy_hit_effect, pos, 0.1f));
         Sound.play(R.raw.enemy_hit, 0);
     }
 
@@ -72,7 +72,7 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
         pos.y += speed * game.frameTime;
 
         if (pos.y > GameView.self.getHeight()) {
-            game.remove(this);
+            Scene.getActiveScene().remove(this);
         }
     }
 
@@ -94,5 +94,9 @@ public class Enemy implements GameObject, CircleCollidable, Recyclable {
         circleCollider.pos.set(pos);
         circleCollider.radius = radius * RECIPROCAL_PIXEL_MULTIPLIER;
         return circleCollider;
+    }
+
+    public Vector2 getPos(){
+        return pos.cpy();
     }
 }

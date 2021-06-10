@@ -7,6 +7,7 @@ import java.util.Random;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.AnimationGameBitmap;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Scene;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 
 // 다른 적들을 만듭니다
@@ -24,8 +25,7 @@ public class ParentEnemy extends Enemy {
     }
 
     public static ParentEnemy get(int level, int x, int y, int speed, float remainTime) {
-        MainGame game = MainGame.get();
-        ParentEnemy enemy = (ParentEnemy) game.get(ParentEnemy.class);
+        ParentEnemy enemy = (ParentEnemy) Scene.getActiveScene().get(ParentEnemy.class);
         if (enemy == null) {
             enemy = new ParentEnemy();
         }
@@ -52,12 +52,12 @@ public class ParentEnemy extends Enemy {
                     }
                     Enemy enemy = Enemy.get(1, (int) pos.x + x * 100, (int) pos.y + y * 100, 300+50*(level/5+1));
                     enemy.setDamage(getDamage()/4);
-                    game.add(MainGame.Layer.enemy, enemy);
+                    Scene.getActiveScene().add(Scene.Layer.enemy, enemy);
                 }
             }
             Sound.stop(chargeSound);
             Sound.play(R.raw.parent_enemy_pop, 0);
-            MainGame.get().remove(this);
+            Scene.getActiveScene().remove(this);
         }
         super.update();
     }

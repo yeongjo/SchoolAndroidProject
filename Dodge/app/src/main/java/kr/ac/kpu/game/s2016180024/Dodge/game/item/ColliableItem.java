@@ -7,6 +7,7 @@ import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollider;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Recyclable;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Scene;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.game.MainGame;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.activity.MainActivity;
@@ -30,7 +31,7 @@ public class ColliableItem extends Item implements GameObject, Recyclable, Circl
         MainGame game = MainGame.get();
         pos.y += speed * game.frameTime;
         if (pos.y > GameView.self.getHeight()) {
-            game.remove(this);
+            Scene.getActiveScene().remove(this);
         }
     }
 

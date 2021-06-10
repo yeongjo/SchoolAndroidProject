@@ -22,4 +22,7 @@
     <string name="increase">증가</string>
     <string name="selected">" 선택됐습니다."</string>
     <string name="cant_connected_to_server">서버에 연결할 수 없었습니다.</string>
+    <string name="press_any_key">아무키나 눌러주세요</string>
+    <string name="game_name">피하기</string>
+    <string name="game_description">드래그로 움직여서 적을 죽이세요!</string>
 </resources>

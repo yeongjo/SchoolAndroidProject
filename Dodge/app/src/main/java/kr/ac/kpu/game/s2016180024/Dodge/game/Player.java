@@ -16,6 +16,7 @@ import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
 import kr.ac.kpu.game.s2016180024.Dodge.game.item.Item;
+import kr.ac.kpu.game.s2016180024.Dodge.game.scene.GamePlayScene;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
 import static kr.ac.kpu.game.s2016180024.Dodge.ui.activity.MainActivity.RECIPROCAL_PIXEL_MULTIPLIER;
@@ -142,7 +143,7 @@ public class Player implements GameObject, CircleCollidable {
             if(attackBgm != -1) {
 //                Log.d(TAG, "update: stop play attack bgm: "+attackBgm);
 //                Sound.stop(attackBgm);
-                MainGame.get().playNormalBGM();
+                GamePlayScene.get().playNormalBGM();
                 attackBgm = -1;
             }
             radiusMultiplier = 1;
@@ -230,7 +231,7 @@ public class Player implements GameObject, CircleCollidable {
             for (Item item : items){
                 item.startMove(this);
             }
-            MainGame.get().playAttackBgm();
+            GamePlayScene.get().playAttackBgm();
             attackBgm = 1;
 //            attackBgm = Sound.play(R.raw.attack_bgm);
         }
@@ -306,7 +307,7 @@ public class Player implements GameObject, CircleCollidable {
         if(this.exp >= requireExp){
             this.exp -= requireExp;
             level++;
-            MainGame.get().askItem();
+            GamePlayScene.get().askItem();
             return true;
         }
         return false;

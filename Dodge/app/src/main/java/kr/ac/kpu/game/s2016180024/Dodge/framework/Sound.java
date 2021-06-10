@@ -3,12 +3,14 @@ package kr.ac.kpu.game.s2016180024.Dodge.framework;
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.util.Log;
 
 import java.util.HashMap;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
+import kr.ac.kpu.game.s2016180024.Dodge.ui.activity.MainActivity;
 
 public class Sound {
     private static final String TAG = Sound.class.getSimpleName();
@@ -18,7 +20,11 @@ public class Sound {
             R.raw.laser_shot,R.raw.player_die,R.raw.player_hit,R.raw.player_move_end,R.raw.player_move_start,
             R.raw.parent_enemy_pop, R.raw.parent_enemy_charge, R.raw.attack_bgm
     };
+    private static final int[] MEDIA_IDS = {
+            R.raw.bgm, R.raw.attack_bgm
+    };
     private static HashMap<Integer, Integer> soundIdMap = new HashMap<>();
+    private static HashMap<Integer, MediaPlayer> mediaPlayerIdMap = new HashMap<>();
 
     private static int maxStreams = 10;
 
@@ -41,14 +47,24 @@ public class Sound {
             int soundId = soundPool.load(context, resId, 1);
             soundIdMap.put(resId, soundId);
         }
+        for(int resId:MEDIA_IDS){
+            mediaPlayerIdMap.put(resId, MediaPlayer.create(MainActivity.self, resId));
+        }
     }
+    public static MediaPlayer getMediaPlayer(int resId){
+        return mediaPlayerIdMap.get( resId);
+    }
+
     public static int play(int resId) {
         return play(resId, 0);
     }
     public static int play(int resId, int isLoop) {
+        return play(resId, isLoop, 1);
+    }
+    public static int play(int resId, int isLoop, float volume) {
         Log.d(TAG, "play: " + resId);
         int soundId = soundIdMap.get(resId);
-        int streamId = soundPool.play(soundId, 1f, 1f, 1, isLoop, 1f);
+        int streamId = soundPool.play(soundId, volume, volume, 1, isLoop, 1f);
         return streamId;
     }
     public static void stop(int streamId) {

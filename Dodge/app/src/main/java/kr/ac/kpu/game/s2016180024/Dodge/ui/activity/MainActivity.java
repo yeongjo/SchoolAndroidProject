@@ -6,11 +6,10 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import kr.ac.kpu.game.s2016180024.Dodge.R;
-import kr.ac.kpu.game.s2016180024.Dodge.game.MainGame;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Scene;
+import kr.ac.kpu.game.s2016180024.Dodge.game.scene.GamePlayScene;
+import kr.ac.kpu.game.s2016180024.Dodge.game.scene.TitleScene;
 import kr.ac.kpu.game.s2016180024.Dodge.ui.view.GameView;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         Log.d(TAG, "Density: " + metrics.density + " DPI:" + metrics.densityDpi);
         GameView.MULTIPLIER = metrics.density * PIXEL_MULTIPLIER;
+        Scene.addScene(TitleScene.get());
     }
 
     @Override
@@ -47,5 +47,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         GameView.self.resumeGame();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(GameView.self.handleBackKey()){
+            return;
+        }
+        super.onBackPressed();
     }
 }

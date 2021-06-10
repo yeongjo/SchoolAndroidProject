@@ -2,7 +2,6 @@ package kr.ac.kpu.game.s2016180024.Dodge.ui.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Choreographer;
@@ -18,7 +17,6 @@ public class GameView extends View {
     private static final String TAG = GameView.class.getSimpleName();
 
     public static float MULTIPLIER;
-    //    private Ball b1, b2;
 
     private long lastFrame;
     private boolean isRunning = true;
@@ -28,12 +26,14 @@ public class GameView extends View {
         super(context, attrs);
         GameView.self = this;
         Sound.init(context);
+        requestCallback();
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         //super.onSizeChanged(w, h, oldw, oldh);
         Log.d(TAG, "onSize: " + w + "," + h);
+
         MainGame game = MainGame.get();
         boolean justInitialized = game.initResources();
         if (justInitialized) {
@@ -83,10 +83,7 @@ public class GameView extends View {
 
     public void pauseGame() {
         isRunning = false;
-        MediaPlayer mediaPlayer = MainGame.get().getMainBgmMediaPlayer();
-        if(mediaPlayer!=null) {
-            mediaPlayer.stop();
-        }
+        MainGame.pauseGame();
     }
 
     public void resumeGame() {
@@ -94,12 +91,13 @@ public class GameView extends View {
             isRunning = true;
             lastFrame = 0;
             requestCallback();
-            MediaPlayer mediaPlayer = MainGame.get().getMainBgmMediaPlayer();
-            if(mediaPlayer!=null) {
-                mediaPlayer.setOnPreparedListener(mp -> mp.start());
-                mediaPlayer.prepareAsync();
-            }
+            MainGame.resumeGame();
         }
+    }
+
+    public boolean handleBackKey() {
+        MainGame game = MainGame.get();
+        return game.handleBackKey();
     }
 }
 

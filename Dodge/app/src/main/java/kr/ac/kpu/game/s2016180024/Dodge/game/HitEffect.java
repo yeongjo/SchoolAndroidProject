@@ -1,14 +1,13 @@
 package kr.ac.kpu.game.s2016180024.Dodge.game;
 
 import android.graphics.Canvas;
-import android.util.Log;
 
-import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameBitmap;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.GameObject;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Recyclable;
+import kr.ac.kpu.game.s2016180024.Dodge.framework.Scene;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Vector2;
-import kr.ac.kpu.game.s2016180024.Dodge.ui.activity.MainActivity;
+import kr.ac.kpu.game.s2016180024.Dodge.game.scene.GamePlayScene;
 
 public class HitEffect implements GameObject, Recyclable {
     private float remainTime;
@@ -19,7 +18,7 @@ public class HitEffect implements GameObject, Recyclable {
     }
 
     public static HitEffect get(int resId, Vector2 pos, float remainTime) {
-        MainGame game = MainGame.get();
+        GamePlayScene game = GamePlayScene.get();
         HitEffect hitEffect = (HitEffect) game.get(HitEffect.class);
         if (hitEffect == null) {
             hitEffect = new HitEffect();
@@ -40,7 +39,7 @@ public class HitEffect implements GameObject, Recyclable {
         MainGame game = MainGame.get();
         remainTime -= game.frameTime;
         if(remainTime <= 0){
-            game.remove(this);
+            Scene.getActiveScene().remove(this);
         }
     }
 
