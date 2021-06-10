@@ -1,4 +1,4 @@
-# 닷지 [총알 피하기]
+# 피하기
 
 2016180024 송영조
 
@@ -8,15 +8,21 @@
 
 드래그 한뒤 떼서 움직이고 움직이는 중엔 무적입니다.
 
-[![youtubeGamePlayVideo](https://img.youtube.com/vi/J6eX6YOg_wM/0.jpg)](https://youtu.be/J6eX6YOg_wM)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/J6eX6YOg_wM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+**[게임플레이 영상]**
+
+[![youtubeGamePlayVideo](https://img.youtube.com/vi/J6eX6YOg_wM/0.jpg)](https://youtu.be/J6eX6YOg_wM)
 
 
 
 
 
 ## 개발 계획
+
+개발진척도 (200%)
+
+![image](https://user-images.githubusercontent.com/26712352/121518614-a674a980-ca2b-11eb-94a6-9e1eb0b28fa6.png)
 
 만드는게 재밌어서 원래 계흭에 없던
 체력, 스테미나, 경험치, 다양한 효과의 아이템, 이펙트, 리더보드 기능을 추가했습니다.
@@ -59,15 +65,40 @@ Item 습득시 효과발동, 움직이는 중 효과발동,
 
 Sound에 MediaPlayer 미리 로드
 
-Vector2 회전, 사칙연산, 정규화를 함수 하나로 함
+Vector2 회전, 사칙연산, 정규화, 거리 등 유틸리티 함수 보유
 
 
 
 ## 아쉬움
 
-졸업작품과 타과목 과제에 의해 출시 가능한 정도까지 개발하지 못했다.
+졸업작품과 타과목 과제에 의해 출시 가능한 정도까지 개발하지 못했습니다.
 
-리더보드 방식의 재미 한계를 극복할 방법을 생각해내지 못했다.
+리더보드 방식의 재미 한계를 극복할 방법을 생각해내지 못했습니다.
+단순한 리더보드만으론 당장의 플레이 동기를 만들어주지 않았습니다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -82,6 +113,12 @@ Vector2 회전, 사칙연산, 정규화를 함수 하나로 함
 
 
 # 중간발표
+
+중간발표 영상
+
+[![youtubeGamePlayVideo](https://img.youtube.com/vi/X-H76QQgT8w/0.jpg)](https://youtu.be/X-H76QQgT8w)
+
+
 
 ## 게임 소개
 
@@ -181,7 +218,25 @@ Vector2 회전, 사칙연산, 정규화를 함수 하나로 함
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 기획발표
+
+기획발표 영상
+
+[![youtubeGamePlayVideo](https://img.youtube.com/vi/X7D-IGz1E3Y/0.jpg)](https://youtu.be/X7D-IGz1E3Y)
 
 
 

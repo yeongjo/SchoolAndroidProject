@@ -61,6 +61,7 @@ public class GamePlayScene extends Scene {
 
     public void onEnter(){
         super.onEnter();
+        reset();
     }
 
     public void onExit(){
@@ -76,12 +77,13 @@ public class GamePlayScene extends Scene {
     }
 
     public boolean initResources() {
-        if (!super.initResources()) {
-            MainGame.playMediaPlayer(mainBgmMediaPlayer);
-            return false;
-        }
         int w = GameView.self.getWidth();
         int h = GameView.self.getHeight();
+        int marginX = (int) (5 * GameView.MULTIPLIER);
+        int marginY = (int) (20 * GameView.MULTIPLIER);
+        leaderboard = Leaderboard.create(w - marginX, marginY + GameView.MULTIPLIER*21, Paint.Align.RIGHT);
+
+        super.initResources();
 
         attackBgmMediaPlayer = Sound.getMediaPlayer( R.raw.attack_bgm);
         attackBgmMediaPlayer.setLooping(true); // Set looping
@@ -98,13 +100,10 @@ public class GamePlayScene extends Scene {
         enemyGenerator = new EnemyGenerator();
         add(Layer.controller, enemyGenerator);
 
-        int marginX = (int) (5 * GameView.MULTIPLIER);
-        int marginY = (int) (20 * GameView.MULTIPLIER);
         score = new Score(w - marginX, marginY);
         score.setScore(0);
         add(Layer.ui, score);
 
-        leaderboard = Leaderboard.create(w - marginX, marginY + GameView.MULTIPLIER*21, Paint.Align.RIGHT);
         add(Layer.ui, leaderboard);
 
         playerHud = new PlayerHud(0, 0);
@@ -117,7 +116,6 @@ public class GamePlayScene extends Scene {
         add(Layer.bg2, clouds);
 
         reset();
-        leaderboard.addUpdateLeaderboardCallback();
         return true;
     }
 
@@ -312,6 +310,7 @@ public class GamePlayScene extends Scene {
         enemyGenerator.reset();
         isPlaying = true;
         leaderboardVisibleRemainTime = 3;
+        leaderboard.addUpdateLeaderboardCallback();
     }
 
 }

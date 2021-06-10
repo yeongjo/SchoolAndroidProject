@@ -22,22 +22,28 @@ public class Scene {
 
     public static void addScene(Scene scene){
         if(!scenes.isEmpty()) {
-            scene.onEnter();
-            scene.onResume();
             Scene prevScene = scenes.peek();
             prevScene.onExit();
             prevScene.onPause();
         }
         scenes.push(scene);
+        scene.onEnter();
+        scene.onResume();
     }
 
     public static Scene popScene(){
         if(scenes.size() <= 1) {
             return null;
         }
-        Scene prevScene = scenes.pop();
+        Scene prevScene = scenes.peek();
         prevScene.onExit();
         prevScene.onPause();
+        scenes.pop();
+        if(!scenes.isEmpty()){
+            Scene scene = scenes.peek();
+            scene.onEnter();
+            scene.onResume();
+        }
         return prevScene;
     }
 
@@ -69,10 +75,10 @@ public class Scene {
     }
 
     public boolean initResources() {
-        if (initialized) {
-            return false;
-        }
-        initialized = true;
+//        if (initialized) {
+//            return false;
+//        }
+//        initialized = true;
         initLayers(Layer.LAYER_COUNT.ordinal());
         return true;
     }

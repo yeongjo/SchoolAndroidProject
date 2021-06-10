@@ -117,5 +117,9 @@ public class EnemyGenerator implements GameObject {
         time = INITIAL_SPAWN_INTERVAL;
         spawnInterval = INITIAL_SPAWN_INTERVAL;
         chapter = level = nextTargetLevel = 1;
+        ArrayList<GameObject> enemys = Scene.getActiveScene().getLayerObjects(Scene.Layer.enemy);
+        for (GameObject enemy : enemys){
+            Scene.getActiveScene().remove(enemy);
+        }
     }
 }

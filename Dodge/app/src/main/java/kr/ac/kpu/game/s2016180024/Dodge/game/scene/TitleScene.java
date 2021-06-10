@@ -21,6 +21,7 @@ public class TitleScene extends Scene {
     private MediaPlayer mainBgmMediaPlayer;
     private Typeface tf;
     private Paint textPaint = new Paint();
+    private Leaderboard leaderboard;
 
     public static TitleScene get(){
         if(self == null){
@@ -39,21 +40,19 @@ public class TitleScene extends Scene {
     }
 
     public boolean initResources() {
-        if (!super.initResources()) {
-            return false;
-        }
         int w = GameView.self.getWidth();
         int h = GameView.self.getHeight();
+        int marginY = (int) (41 * GameView.MULTIPLIER);
+        leaderboard = Leaderboard.create(w/2, marginY, Paint.Align.CENTER);
+        leaderboard.addUpdateLeaderboardCallback();
+
+        super.initResources();
 
         mainBgmMediaPlayer = Sound.getMediaPlayer(R.raw.bgm);
         mainBgmMediaPlayer.setLooping(true); // Set looping
         mainBgmMediaPlayer.setVolume(50, 50);
         MainGame.playMediaPlayer(mainBgmMediaPlayer);
 
-        int marginX = (int) (5 * GameView.MULTIPLIER);
-        int marginY = (int) (41 * GameView.MULTIPLIER);
-        Leaderboard leaderboard = Leaderboard.create(w/2, marginY, Paint.Align.CENTER);
-        leaderboard.addUpdateLeaderboardCallback();
         add(Layer.ui, leaderboard);
 
         Player player = new Player(w / 2.0f, h - 300);
