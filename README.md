@@ -8,6 +8,12 @@
 
 드래그 한뒤 떼서 움직이고 움직이는 중엔 무적입니다.
 
+[![youtubeGamePlayVideo](https://img.youtube.com/vi/J6eX6YOg_wM/0.jpg)](https://youtu.be/J6eX6YOg_wM)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/J6eX6YOg_wM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+
 
 
 ## 개발 계획
@@ -38,6 +44,8 @@ SoundPool 구현
 Level 텍스트 출력
 
 VerticalBackground
+
+string.xml 한국어, 영어 지원
 
 
 
