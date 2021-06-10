@@ -207,15 +207,16 @@ public class GamePlayScene extends Scene {
         builder.setTitle(R.string.select_item);
         int chapter = enemyGenerator.getChapter();
         float difficulty = EnemyGenerator.difficultyMultiplier(chapter/6.0f);
-        ArrayList<Item> itemLists = new ArrayList<>(Arrays.asList(new statsItem(statsItem.Type.heal, difficulty*1+3),
-                new statsItem(statsItem.Type.addHp, 1 * difficulty),
-                new statsItem(statsItem.Type.addStamina, 1 * difficulty),
-                new statsItem(statsItem.Type.addRadius, 10 * difficulty),
-                new statsItem(statsItem.Type.addRadius, -5 * difficulty),
-                new statsItem(statsItem.Type.addSpeed, 140 * difficulty),
-                new statsItem(statsItem.Type.subSpeedAddStamina, 1.5f * difficulty)));
+        ArrayList<Item> itemLists = new ArrayList<>();
+        itemLists.add(new statsItem(statsItem.Type.heal, difficulty*1+3));
+        itemLists.add(new statsItem(statsItem.Type.addHp, 1 * difficulty));
+        itemLists.add(new statsItem(statsItem.Type.addStamina, 1 * difficulty));
+        itemLists.add(new statsItem(statsItem.Type.addRadius, 33 * difficulty));
+        itemLists.add(new statsItem(statsItem.Type.addRadius, -23 * difficulty));
+        itemLists.add(new statsItem(statsItem.Type.addSpeed, 210 * difficulty));
+        itemLists.add(new statsItem(statsItem.Type.subSpeedAddStamina, 1.5f * difficulty));
         itemLists.add(new LifeStealItem(0.1f));
-        itemLists.add(new AttackRangeItem(0.2f));
+        itemLists.add(new AttackRangeItem(0.6f));
         Random random = new Random();
         ArrayList<Item> items = new ArrayList<>();
         for (int i=0; i< itemLists.size(); ++i) {
@@ -226,7 +227,7 @@ public class GamePlayScene extends Scene {
                 itemLists.set(randomIndex, temp);
             }
         }
-        for (int i=0; i< 3; ++i) {
+        for (int i=0; i< Math.min(3, itemLists.size()); ++i) {
             items.add(itemLists.get(i));
         }
         String[] itemNames = new String[items.size()];
