@@ -2,9 +2,11 @@ package kr.ac.kpu.game.s2016180024.Dodge.game;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.CircleCollidable;
@@ -29,6 +31,7 @@ public class Player implements GameObject, CircleCollidable {
     private static final float DEFAULT_SPEED = 450;
 
     private GameBitmap playerBitmap;
+    private GameBitmap playerAttackBitmap;
     private GameBitmap hitEffectBitmap;
     private float hitEffectDuration = 0.0f;
     private Vector2 pos = new Vector2();
@@ -42,6 +45,7 @@ public class Player implements GameObject, CircleCollidable {
     private float dragMultiplier = 1.5f;// 드래그할때 드래그 된 위치보다 얼마나 더 이동할지의 비율
     private Vector2 normalizedTargetDelta = new Vector2();
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint zigzagPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private float radius = INIT_RADIUS * GameView.MULTIPLIER;
     private float additiveAttackRadius = 1;
     private float radiusMultiplier;
@@ -57,11 +61,30 @@ public class Player implements GameObject, CircleCollidable {
     private boolean isDead = false;
     private boolean isDieNextFrame = false;
     private ArrayList<Item> items = new ArrayList<>();
+    private Path path = new Path();
+    private Random random = new Random();
+    private int attackBgm = -1;
 
     public Player(float x, float y) {
         initPos.set(pos.set(x,y));
         this.playerBitmap = new GameBitmap(R.mipmap.player);
         this.hitEffectBitmap = new GameBitmap(R.mipmap.player_hit_effect);
+        playerAttackBitmap = new GameBitmap(R.mipmap.player_attack);
+        Vector2 circleVec = new Vector2(100,0);
+
+        path.moveTo(circleVec.x,circleVec.y);
+        float zigzagSize = 0.3f;
+        float rotate = random.nextFloat()*10+5;
+        for (float rotation = 0; rotation < 350; ) {
+            circleVec.rotate(rotate);
+            Vector2 linePos = circleVec.cpy();
+            linePos.mul(random.nextFloat()*zigzagSize+(1-zigzagSize*0.5f));
+            path.lineTo(linePos.x, linePos.y);
+            rotate = random.nextFloat()*10+5;
+            rotation += rotate;
+        }
+        path.close();
+        zigzagPaint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(2);
         paint.setStyle(Paint.Style.STROKE);
         reset();
@@ -116,6 +139,12 @@ public class Player implements GameObject, CircleCollidable {
                 }
             }
         }else{
+            if(attackBgm != -1) {
+//                Log.d(TAG, "update: stop play attack bgm: "+attackBgm);
+//                Sound.stop(attackBgm);
+                MainGame.get().playNormalBGM();
+                attackBgm = -1;
+            }
             radiusMultiplier = 1;
             stamina += game.frameTime * staminaRegenSpeed;
             isMoving = false;
@@ -132,6 +161,7 @@ public class Player implements GameObject, CircleCollidable {
 
     public void draw(Canvas canvas) {
         playerBitmap.setScale(radius * 0.0111f);
+        playerAttackBitmap.setScale(radius * 0.0111f);
         playerBitmap.draw(canvas, pos.x, pos.y);
         float radius = this.radius * additiveAttackRadius * radiusMultiplier * RECIPROCAL_PIXEL_MULTIPLIER;
         if(isDragging){
@@ -141,19 +171,33 @@ public class Player implements GameObject, CircleCollidable {
             canvas.drawLine(pos.x-targetRightVector.x, pos.y-targetRightVector.y, pos.x + draggingTargetDelta.x-targetRightVector.x, pos.y + draggingTargetDelta.y-targetRightVector.y, paint);
             canvas.drawCircle(pos.x + draggingTargetDelta.x, pos.y + draggingTargetDelta.y, radius, paint);
             canvas.drawCircle(pos.x, pos.y, radius, paint);
+//            drawAttackRange(canvas, radius);
         }
         if(isMoving){
-            paint.setColor(0xffffcf48);   //color.yellow
+            paint.setColor(0xfff83530);   //color.yellow
+            playerAttackBitmap.draw(canvas, pos.x, pos.y);
             targetRightVector.set(targetDelta.x, targetDelta.y).normalize().rotate(90).mul(radius);
             canvas.drawLine(pos.x+targetRightVector.x, pos.y+targetRightVector.y, pos.x + targetDelta.x+targetRightVector.x, pos.y + targetDelta.y+targetRightVector.y, paint);
             canvas.drawLine(pos.x-targetRightVector.x, pos.y-targetRightVector.y, pos.x + targetDelta.x-targetRightVector.x, pos.y + targetDelta.y-targetRightVector.y, paint);
             canvas.drawCircle(pos.x + targetDelta.x, pos.y + targetDelta.y, radius, paint);
-            canvas.drawCircle(pos.x, pos.y, radius, paint);
+//            canvas.drawCircle(pos.x, pos.y, radius, paint);
+            drawAttackRange(canvas, radius);
         }
-
         if (hitEffectDuration < Hit_EFFECT_DURATION) {
             hitEffectBitmap.draw(canvas, pos.x, pos.y);
         }
+    }
+
+    void drawAttackRange(Canvas canvas, float radius){
+        canvas.save();
+        zigzagPaint.setColor(paint.getColor());
+        zigzagPaint.setStrokeWidth(1/radius*500);
+        canvas.translate(pos.x, pos.y);
+        canvas.rotate(random.nextFloat()*360);
+        canvas.scale(radius*0.01f, radius*0.01f);
+        canvas.drawPath(path, zigzagPaint);
+        canvas.restore();
+
     }
 
     public void startDrag(float x, float y) {
@@ -186,6 +230,9 @@ public class Player implements GameObject, CircleCollidable {
             for (Item item : items){
                 item.startMove(this);
             }
+            MainGame.get().playAttackBgm();
+            attackBgm = 1;
+//            attackBgm = Sound.play(R.raw.attack_bgm);
         }
         isMoving = true;
         isDragging = false;

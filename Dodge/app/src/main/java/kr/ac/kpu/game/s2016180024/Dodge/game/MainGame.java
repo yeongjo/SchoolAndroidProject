@@ -42,10 +42,12 @@ public class MainGame {
     private boolean isPlaying = true;
     private EnemyGenerator enemyGenerator;
     private Leaderboard leaderboard;
-    private MediaPlayer mediaPlayer;
+    private MediaPlayer mainBgmMediaPlayer;
+    private MediaPlayer attackBgmMediaPlayer;
+    private MediaPlayer lastPlayingMediaPlayer;
 
     public enum Layer {
-        bg1, bg2, enemy, bullet, item, player, effect, ui, controller, ENEMY_COUNT
+        bg1, bg2, enemy, bullet, item, player, effect, ui, controller, LAYER_COUNT
     }
 
     public static MainGame get() {
@@ -55,8 +57,8 @@ public class MainGame {
         return self;
     }
 
-    public MediaPlayer getMediaPlayer(){
-        return mediaPlayer;
+    public MediaPlayer getMainBgmMediaPlayer(){
+        return lastPlayingMediaPlayer;
     }
 
     public Score getScore(){
@@ -85,21 +87,23 @@ public class MainGame {
 
     public boolean initResources() {
         if (initialized) {
-            mediaPlayer.start();
+            mainBgmMediaPlayer.start();
             return false;
         }
         int w = GameView.self.getWidth();
         int h = GameView.self.getHeight();
 
-        initLayers(Layer.ENEMY_COUNT.ordinal());
+        initLayers(Layer.LAYER_COUNT.ordinal());
 
+        attackBgmMediaPlayer = MediaPlayer.create(MainActivity.self, R.raw.attack_bgm);
+        attackBgmMediaPlayer.setLooping(true); // Set looping
+        attackBgmMediaPlayer.setVolume(50, 50);
 
-        mediaPlayer = MediaPlayer.create(MainActivity.self, R.raw.bgm);
-        mediaPlayer.setLooping(true); // Set looping
-        mediaPlayer.setVolume(50, 50);
-        mediaPlayer.start();
-
-//        Sound.play(R.raw.bgm, 1);
+        mainBgmMediaPlayer = MediaPlayer.create(MainActivity.self, R.raw.bgm);
+        mainBgmMediaPlayer.setLooping(true); // Set looping
+        mainBgmMediaPlayer.setVolume(50, 50);
+        mainBgmMediaPlayer.start();
+        lastPlayingMediaPlayer = mainBgmMediaPlayer;
 
         player = new Player(w/2.0f, h - 300);
         //layers.get(Layer.player.ordinal()).add(player);
@@ -116,10 +120,6 @@ public class MainGame {
         leaderboard = new Leaderboard(w - marginX, marginY + GameView.MULTIPLIER*21);
         add(Layer.ui, leaderboard);
 
-//        level = new Level(w - margin, margin + 100);
-//        level.setLevel(1);
-//        add(Layer.ui, level);
-
         playerHud = new PlayerHud(0, 0);
         add(Layer.ui, playerHud);
 
@@ -135,6 +135,18 @@ public class MainGame {
         reset();
         leaderboard.addUpdateLeaderboardCallback();
         return true;
+    }
+
+    public void playAttackBgm(){
+        mainBgmMediaPlayer.pause();
+        attackBgmMediaPlayer.start();
+        lastPlayingMediaPlayer = attackBgmMediaPlayer;
+    }
+
+    public void playNormalBGM(){
+        attackBgmMediaPlayer.pause();
+        mainBgmMediaPlayer.start();
+        lastPlayingMediaPlayer = mainBgmMediaPlayer;
     }
 
     private void initLayers(int layerCount) {
@@ -232,14 +244,10 @@ public class MainGame {
     }
 
     public void add(Layer layer, GameObject gameObject) {
-        GameView.self.post(new Runnable() {
-            @Override
-            public void run() {
-                ArrayList<GameObject> objects = layers.get(layer.ordinal());
-                objects.add(gameObject);
-            }
+        GameView.self.post(() -> {
+            ArrayList<GameObject> objects = layers.get(layer.ordinal());
+            objects.add(gameObject);
         });
-//        Log.d(TAG, "<A> object count = " + objects.size());
     }
 
     public void remove(GameObject gameObject) {
@@ -254,7 +262,6 @@ public class MainGame {
                         ((Recyclable) gameObject).recycle();
                         recycle(gameObject);
                     }
-                    //Log.d(TAG, "Removed: " + gameObject);
                     break;
                 }
             }
@@ -279,7 +286,7 @@ public class MainGame {
                 new statsItem(statsItem.Type.addStamina, 1 * difficulty),
                 new statsItem(statsItem.Type.addRadius, 10 * difficulty),
                 new statsItem(statsItem.Type.addRadius, -5 * difficulty),
-                new statsItem(statsItem.Type.addSpeed, 80 * difficulty),
+                new statsItem(statsItem.Type.addSpeed, 140 * difficulty),
                 new statsItem(statsItem.Type.subSpeedAddStamina, 1.5f * difficulty)));
         itemLists.add(new LifeStealItem(0.1f));
         itemLists.add(new AttackRangeItem(0.2f));

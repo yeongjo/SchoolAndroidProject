@@ -11,7 +11,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import kr.ac.kpu.game.s2016180024.Dodge.R;
 import kr.ac.kpu.game.s2016180024.Dodge.framework.Sound;
 import kr.ac.kpu.game.s2016180024.Dodge.game.MainGame;
 
@@ -84,7 +83,7 @@ public class GameView extends View {
 
     public void pauseGame() {
         isRunning = false;
-        MediaPlayer mediaPlayer = MainGame.get().getMediaPlayer();
+        MediaPlayer mediaPlayer = MainGame.get().getMainBgmMediaPlayer();
         if(mediaPlayer!=null) {
             mediaPlayer.stop();
         }
@@ -95,7 +94,7 @@ public class GameView extends View {
             isRunning = true;
             lastFrame = 0;
             requestCallback();
-            MediaPlayer mediaPlayer = MainGame.get().getMediaPlayer();
+            MediaPlayer mediaPlayer = MainGame.get().getMainBgmMediaPlayer();
             if(mediaPlayer!=null) {
                 mediaPlayer.setOnPreparedListener(mp -> mp.start());
                 mediaPlayer.prepareAsync();

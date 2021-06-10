@@ -22,9 +22,11 @@ public class EnemyGenerator implements GameObject {
     private int chapter = 1;
     private int nextChapterCount = 3;
     public static EnemyGenerator self;
+    Random random;
 
     public EnemyGenerator() {
         self = this;
+        random = new Random();
         reset();
     }
 
@@ -61,11 +63,10 @@ public class EnemyGenerator implements GameObject {
         //Log.d(TAG, "Generate now !!");
         MainGame game = MainGame.get();
         int tenth = GameView.self.getWidth() / 10;
-        Random r = new Random();
         for (int i = 1; i <= 9; i += 2) {
-            int x = tenth * i + r.nextInt(tenth) - tenth/2;
+            int x = tenth * i + random.nextInt(tenth) - tenth/2;
             int y = 0;
-            int enemyRandom = r.nextInt(6);
+            int enemyRandom = random.nextInt(6);
             int level = Math.min(wave / nextChapterCount, 20) - enemyRandom + 1;
             level = Math.max(1, Math.min(level,20));
             int localChapter = level / ENEMY_TYPE_COUNT + 1;
@@ -73,7 +74,6 @@ public class EnemyGenerator implements GameObject {
             int visualLevel = Math.min(wave / nextChapterCount - enemyRandom, 5)%ENEMY_TYPE_COUNT + 1;
             visualLevel = Math.min(Math.max(1, visualLevel), 5);
             Enemy enemy;
-//            level = 0;
             if(level % ENEMY_TYPE_COUNT == 0){
                 enemy = LaserEnemy.get(visualLevel, x, y, (int)(1000 * ((localChapter-1)*0.42f+1)), 10.0f*((localChapter-1)*1.7f+1), 2.0f);
             }else if(level % ENEMY_TYPE_COUNT == 4){
@@ -89,7 +89,7 @@ public class EnemyGenerator implements GameObject {
             enemy.setDamage(0.5f+localChapter*0.2f);
             game.add(MainGame.Layer.enemy, enemy);
         }
-        ExpItem item = ExpItem.get(100 + r.nextInt(GameView.self.getWidth() - 100), chapter*0.5f+1);
+        ExpItem item = ExpItem.get(100 + random.nextInt(GameView.self.getWidth() - 100), chapter*0.5f+1);
         game.add(MainGame.Layer.item, item);
     }
 

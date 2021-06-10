@@ -16,7 +16,7 @@ public class Sound {
     private static final int[] SOUND_IDS = {
             R.raw.bgm, R.raw.btn_click,R.raw.enemy_hit, R.raw.get_exp_item, R.raw.item_selected,
             R.raw.laser_shot,R.raw.player_die,R.raw.player_hit,R.raw.player_move_end,R.raw.player_move_start,
-            R.raw.parent_enemy_pop, R.raw.parent_enemy_charge
+            R.raw.parent_enemy_pop, R.raw.parent_enemy_charge, R.raw.attack_bgm
     };
     private static HashMap<Integer, Integer> soundIdMap = new HashMap<>();
 

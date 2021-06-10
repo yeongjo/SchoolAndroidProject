@@ -36,7 +36,7 @@ public class statsItem extends Item {
                 player.addSpeed(amount);
                 break;
             case subSpeedAddStamina:
-                player.addSpeed(-amount*20);
+                player.addSpeed(-amount*40);
                 player.addStamina(amount);
                 break;
         }
