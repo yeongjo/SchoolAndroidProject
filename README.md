@@ -6,7 +6,7 @@
 
 ## 게임소개
 
-드래그 한뒤 떼서 움직이고 움직이는 중엔 무적입니다.
+드래그 한뒤 떼서 움직이고, 움직이는 중엔 주위를 공격합니다.
 
 
 
@@ -22,20 +22,24 @@
 
 개발진척도 (200%)
 
-![image](https://user-images.githubusercontent.com/26712352/121518614-a674a980-ca2b-11eb-94a6-9e1eb0b28fa6.png)
-
-만드는게 재밌어서 원래 계흭에 없던
+만드는게 재밌어서 원래 계획에 없던
 체력, 스테미나, 경험치, 다양한 효과의 아이템, 이펙트, 리더보드 기능을 추가했습니다.
+
+![image](https://user-images.githubusercontent.com/26712352/121518614-a674a980-ca2b-11eb-94a6-9e1eb0b28fa6.png)
 
 
 
 ## 사용한 기술
 
-씬 이동
+타이틀 씬, 게임플레이 씬 이동
 
 파이어베이스 리더보드 연동
 
 MediaPlayer bgm재생
+
+back키 연동
+
+홈키 눌러 나갔다 들어올때 노래 및 게임 일시정지
 
 
 
@@ -61,11 +65,14 @@ string.xml 한국어, 영어 지원
 
 CircleCollider
 
-Item 습득시 효과발동, 움직이는 중 효과발동, 
+Item [습득시 효과발동, 움직이는 중 효과발동, 공격했을때 효과발동]
 
-Sound에 MediaPlayer 미리 로드
+Sound에 MediaPlayer Pool 기능 추가
 
-Vector2 회전, 사칙연산, 정규화, 거리 등 유틸리티 함수 보유
+Vector2 클래스에 회전, 사칙연산, 정규화, 거리 등 유틸리티 함수 구현
+[플레이어 이동시 주변 전기효과 구현에 큰 도움]
+
+
 
 
 
@@ -77,6 +84,10 @@ Vector2 회전, 사칙연산, 정규화, 거리 등 유틸리티 함수 보유
 단순한 리더보드만으론 당장의 플레이 동기를 만들어주지 않았습니다.
 
 
+
+## 지인 인터뷰
+
+[![youtubeGamePlayVideo](https://img.youtube.com/vi/emGGLUzXiLs/0.jpg)](https://youtu.be/emGGLUzXiLs)
 
 
 
